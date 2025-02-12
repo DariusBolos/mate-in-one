@@ -1,4 +1,4 @@
-async function initConnection(connectionUrl) {
+async function initDatabaseConnection(connectionUrl) {
     const mongoose = require('mongoose');
 
     await mongoose.connect(connectionUrl)
@@ -10,4 +10,4 @@ async function initConnection(connectionUrl) {
     });
 }
 
-module.exports = initConnection;
+module.exports = initDatabaseConnection;
