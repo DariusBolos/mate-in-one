@@ -80,13 +80,13 @@ PORT=5000
 
 ### **4️⃣ Start the Backend Server**  
 ```bash  
-cd server  
-npm run dev  
+cd backend  
+nodemon app.js  
 ```
 
 ### **5️⃣ Start the Frontend**  
 ```bash  
-cd client  
+cd frontend  
 npm run dev  
 ```
 
