@@ -1,4 +1,4 @@
-# ♟️ Mate-in-One  
+# ♟️ Mate-in-One  (WORK IN PROGRESS)
 
 **Mate-in-One** is a **full-stack multiplayer chess game** built with **React (TSX), Node.js (Express), and MongoDB (Mongoose)**. It allows players to create an account and enjoy chess either **locally on the same computer or remotely on separate devices**.  
 
