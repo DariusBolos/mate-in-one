@@ -1,5 +1,5 @@
-export default interface type {
-    type: String,
-    name: String,
+export type Avatar = {
+    type: string,
+    name: string,
     url: string | ArrayBuffer | null, 
 }

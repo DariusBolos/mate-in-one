@@ -1,10 +1,10 @@
-import Avatar from "./Avatar";
+import {Avatar} from "./Avatar";
 
-export default interface type {
-    _id: String | null,
-    username: String,
-    email: String,
-    password: String,
+export type User = {
+    _id: string | null,
+    username: string,
+    email: string,
+    password: string,
     createdDate: Date | null,
     avatar : Avatar
 } 
