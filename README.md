@@ -61,7 +61,7 @@ The game offers a seamless experience with real-time gameplay, an intuitive UI, 
 
 ### **1️⃣ Clone the Repository**  
 ```bash  
-git clone https://github.com/yourusername/mate-in-one.git  
+git clone https://github.com/DariusBolos/mate-in-one.git  
 cd mate-in-one  
 ```
 
