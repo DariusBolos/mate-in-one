@@ -10,7 +10,7 @@ export default function PasswordInput(props: {inputReference: React.RefObject<HT
   return(
         <div>
                 <div className="flex items-center justify-between">
-                  <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900">
+                  <label htmlFor="password" className="block text-sm/6 font-medium text-white">
                     Password
                   </label>
                 </div>
@@ -58,7 +58,7 @@ export default function PasswordInput(props: {inputReference: React.RefObject<HT
                     </div>
                   </div>
                   <div className="text-sm/6">
-                    <label htmlFor="showPassword" className="font-medium text-gray-900">
+                    <label htmlFor="showPassword" className="font-medium text-white">
                       Show password
                     </label>
                   </div>

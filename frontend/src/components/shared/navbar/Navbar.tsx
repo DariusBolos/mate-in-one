@@ -1,10 +1,11 @@
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import logo from '../../../assets/logo.png';
+import { NavLink } from 'react-router';
 
 const navigation = [
   { name: 'Home', href: '#', target: '_self', current: true },
-  { name: 'Record', href: '#', target: '_self', current: false },
+  { name: 'Stats', href: '#', target: '_self', current: false },
   { name: 'Friends', href: '#', target: '_self', current: false },
   { name: 'Learn Chess', href: 'https://www.chess.com/learn-how-to-play-chess', target: '_blank', current: false },
 ]
@@ -98,12 +99,12 @@ export default function Navbar() {
                   </a>
                 </MenuItem>
                 <MenuItem>
-                  <a
-                    href="#"
+                  <NavLink
+                    to='/login'
                     className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
                   >
                     Sign out
-                  </a>
+                  </NavLink>
                 </MenuItem>
               </MenuItems>
             </Menu>

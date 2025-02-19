@@ -1,6 +1,6 @@
 import Avatar from "./Avatar";
 
-export default interface User{
+export default interface type {
     _id: String | null,
     username: String,
     email: String,

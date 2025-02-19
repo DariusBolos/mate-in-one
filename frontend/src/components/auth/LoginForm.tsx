@@ -14,7 +14,7 @@ export default function LoginForm() {
       }
 
       e.preventDefault();
-      getUser(emailRef.current!.value);
+      getUser(emailRef.current!.value, passwordRef.current!.value);
   }
 
   return (
@@ -26,7 +26,7 @@ export default function LoginForm() {
               src={logo}
               className="mx-auto h-10 w-auto"
             />
-            <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
+            <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-white">
               Sign in to your account
             </h2>
           </div>
@@ -37,7 +37,7 @@ export default function LoginForm() {
               className="space-y-6"
               onSubmit={handleLoginSubmitEvent}>
               <div>
-                <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
+                <label htmlFor="email" className="block text-sm/6 font-medium text-white">
                   Email address
                 </label>
                 <div className="mt-2">
@@ -61,7 +61,7 @@ export default function LoginForm() {
                 </button>
               </div>
             </form>
-            <p className="mt-10 text-center text-sm/6 text-gray-500">
+            <p className="mt-10 text-center text-sm/6 text-white">
                 Don't have an account?{' '}
                 <NavLink 
                     className="font-semibold text-indigo-600 hover:text-indigo-500" 

@@ -2,9 +2,9 @@ import { PhotoIcon } from '@heroicons/react/24/solid';
 import logo from '../../assets/logo.png';
 import PasswordInput from '../shared/passwordInput/PasswordInput';
 import { ChangeEvent, FormEvent, useRef, useState} from 'react';
-import User from '../../interfaces/User';
+import User from '../../types/User';
 import { saveUser } from '../../services/UserService';
-import Avatar from '../../interfaces/Avatar';
+import Avatar from '../../types/Avatar';
 
 export default function RegisterForm() {
 
@@ -68,7 +68,7 @@ export default function RegisterForm() {
               src={logo}
               className="mx-auto h-10 w-auto"
             />
-            <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
+            <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-white">
               Create a new Account
             </h2>
           </div>
@@ -79,7 +79,7 @@ export default function RegisterForm() {
               className="space-y-6" 
               onSubmit={handleFormSubmitEvent}>
             <div>
-                <label htmlFor="username" className="block text-sm/6 font-medium text-gray-900">
+                <label htmlFor="username" className="block text-sm/6 font-medium text-white">
                   Username
                 </label>
                 <div className="mt-2">
@@ -95,7 +95,7 @@ export default function RegisterForm() {
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
+                <label htmlFor="email" className="block text-sm/6 font-medium text-white">
                   Email address
                 </label>
                 <div className="mt-2">
@@ -112,13 +112,13 @@ export default function RegisterForm() {
               </div>
               <PasswordInput inputReference={passwordRef}/>            
               <div className="col-span-full">
-              <label htmlFor="avatar" className="block text-sm/6 font-medium text-gray-900">
+              <label htmlFor="avatar" className="block text-sm/6 font-medium text-white">
                 Avatar
               </label>
-              <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+              <div className="mt-2 flex justify-center rounded-lg border border-dashed border-white/25 px-6 py-10">
                 <div className="text-center">
-                  <PhotoIcon aria-hidden="true" className="mx-auto size-12 text-gray-300" />
-                  <div className="mt-4 flex text-sm/6 text-gray-600">
+                  <PhotoIcon aria-hidden="true" className="mx-auto size-12 text-white" />
+                  <div className="mt-4 flex text-sm/6 text-white">
                     <label
                       htmlFor="file-upload"
                       className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 focus-within:outline-hidden hover:text-indigo-500"
@@ -134,7 +134,7 @@ export default function RegisterForm() {
                     </label>
                     <p className={`pl-1 ` + {paragraphHiddenText}}>{fileUploadText}</p>
                   </div>
-                  <p className={`text-xs/5 text-gray-600 ` + paragraphHiddenText}>PNG, JPG, GIF up to 10MB</p>
+                  <p className={`text-xs/5 text-white ` + paragraphHiddenText}>PNG, JPG, GIF up to 10MB</p>
                   </div>
               </div>
             </div>        

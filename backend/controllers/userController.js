@@ -8,7 +8,6 @@ const checkIfUserExists = async (email, password = "") => {
         if(password === "") {
             return user !== null;
         }
-
         return user !== null && user.password === password;
     } catch(error) {
         console.log(error);
