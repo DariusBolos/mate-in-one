@@ -8,7 +8,6 @@ import RegisterPage from './pages/auth/RegisterPage.tsx'
 import DashboardPage from './pages/dashboard/DashboardPage.tsx'
 import GamePage from './pages/game/GamePage.tsx'
 import AboutPage from './pages/about/AboutPage.tsx'
- './pages/auth/RegisterPage.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -1,9 +1,9 @@
 type PieceName = "king" | "queen" | "bishop" | "knight" | "rook" | "pawn";
-type Color = "white" | "black";
+type PieceColor = "white" | "black";
 
 type Piece = {
-    name: PieceName,
-    color: Color
+    id: string
+    boardCode: string
 }
 
-export type {Piece, PieceName, Color}
+export type {Piece, PieceName, PieceColor}

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import User from '../types/User';
+import {User} from '../types/User';
 
 const userUrl = "http://localhost:3000/user";
 

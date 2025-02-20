@@ -1,4 +1,4 @@
-import Board from "../../components/chess/Board";
+import Board from "../../components/chess/board/Board";
 // import MoveTracker from "../../components/chess/MoveTracker";
 
 export default function GamePage() {
