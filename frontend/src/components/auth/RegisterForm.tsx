@@ -2,9 +2,9 @@ import { PhotoIcon } from '@heroicons/react/24/solid';
 import logo from '../../assets/logo.png';
 import PasswordInput from '../shared/passwordInput/PasswordInput';
 import { ChangeEvent, FormEvent, useRef, useState} from 'react';
-import User from '../../types/User';
+import { User } from '../../types/User';
 import { saveUser } from '../../services/UserService';
-import Avatar from '../../types/Avatar';
+import { Avatar } from '../../types/Avatar';
 
 export default function RegisterForm() {
 

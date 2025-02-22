@@ -1,15 +1,8 @@
-import { BoardCoordinates } from "../../types/BoardCoordinates";
-
 export default abstract class PieceStrategy {
-    protected validPositions: BoardCoordinates[];
 
-    protected constructor() {
-        this.validPositions = [];
-    }
+    public isValidMove(_x: number, _y: number, _board: (string | null)[][], _color: string) {};
 
-    public isValidMove(){}
+    public getValidMoves(_position: string, _board: (string | null)[][]) {}
 
-    public getValidPositions(startPosition: BoardCoordinates) {
-        console.log(startPosition);
-    };
+    protected isKingInChess(_board: (string | null)[][], _color: string) {}
 }

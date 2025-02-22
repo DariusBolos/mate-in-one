@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { DndContext, DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import Square from './Square';
+import { BoardCoordinates } from '../../../types/BoardCoordinates';
+import { convertCooordinatesStringToObject as stringToObj, convertPieceStringToObject as pieceToObj, convertCooordinatesStringToArray as coordinatesToArray} from '../../../utils/Convertors';
+import { selectStrategy } from '../../../utils/strategies/StrategySelector';
+import { Strategy } from '../../../types/Strategy';
 
 export default function Board() {
     const boardLetters = "ABCDEFGH";
@@ -18,26 +22,38 @@ export default function Board() {
     ];
 
     const [chessBoard, setChessBoard] = useState(initialBoard);
-    const [moveStrategy, setMoveStrategy] = useState(null);
+    const [_moveStrategy , setMoveStrategy] = useState<Strategy | null>(null);
+    const [initialPosition, setInitialPosition] = useState<number[]>([]);
+    const [validMoves, setValidMoves] = useState<void | number[][]>([]);
 
     const handleDragStart = (event: DragStartEvent) => {
-        console.log(event);
+        const {active} = event; 
+
+        const {rowIndex, colIndex}: BoardCoordinates = stringToObj(String(active.id));
+        const pieceObj = pieceToObj(chessBoard[rowIndex][colIndex] as string);
+        const intermediaryStrategy = selectStrategy(pieceObj.name);
+        setMoveStrategy(intermediaryStrategy);
+        setValidMoves(intermediaryStrategy.getValidMoves(String(active.id), chessBoard));
+        setInitialPosition([rowIndex, colIndex]);
     }
 
     const handleDragEnd = (event: DragEndEvent) => {
-        const initialBoard: (string | null)[][] = [
-            ["rook-black", "knight-black", "bishop-black", "queen-black", "king-black", "bishop-black", "knight-black", "rook-black"],
-            ["pawn-black", "pawn-black", "pawn-black", "pawn-black", "pawn-black", "pawn-black", "pawn-black", "pawn-black"],
-            [null, null, null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null],
-            [null, "pawn-white", null, null, null, null, null, null],
-            [null, null, null, null, null, null, null, null],
-            ["pawn-white", null, "pawn-white", "pawn-white", "pawn-white", "pawn-white", "pawn-white", "pawn-white"],
-            ["rook-white", "knight-white", "bishop-white",  "queen-white", "king-white", "bishop-white", "knight-white", "rook-white"]
-        ];
-
-        setChessBoard(initialBoard);
-    }
+        const { over } = event;
+    
+        const [x, y] = coordinatesToArray(String(over?.id));
+        const [initialX, initialY] = initialPosition;
+    
+        if (!validMoves!.some(([row, col]) => row === x && col === y)) {
+            return;
+        }
+    
+        const newBoard = chessBoard.map(row => [...row]);
+    
+        newBoard[x][y] = newBoard[initialX][initialY];
+        newBoard[initialX][initialY] = null;
+    
+        setChessBoard(newBoard);
+    };
 
     return (
         <div className="relative">
@@ -48,7 +64,7 @@ export default function Board() {
                 <div className="grid grid-cols-8 grid-rows-8 border-40 border-gray-800">
                 {chessBoard.map((row, rowIndex) =>
                         row.map((pieceCode, colIndex) => (
-                            <Square key={`${7 - rowIndex}-${colIndex}`} piece={pieceCode} rowIndex={rowIndex} colIndex={colIndex} />
+                            <Square key={`${rowIndex}-${colIndex}`} piece={pieceCode} rowIndex={rowIndex} colIndex={colIndex} />
                         ))
                     )}
                 </div>

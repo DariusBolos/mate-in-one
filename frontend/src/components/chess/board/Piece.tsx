@@ -1,9 +1,10 @@
 import createPiece from "../../../utils/PieceFactory";
-import { PieceColor, PieceName, Piece as PieceProps } from "../../../types/Piece";
+import { Piece as PieceProps } from "../../../types/Piece";
 import { useDraggable } from "@dnd-kit/core";
+import { convertPieceStringToObject } from "../../../utils/Convertors";
 
-export default function Piece({id, boardCode}: PieceProps) {
-    const [name, color] = boardCode!.split('-');
+export default function Piece({id, pieceString}: PieceProps) {
+    const piecePropsObject = convertPieceStringToObject(pieceString);
     
     const {attributes, listeners, setNodeRef, transform} = useDraggable({
         id: id,
@@ -15,7 +16,7 @@ export default function Piece({id, boardCode}: PieceProps) {
 
     return (
         <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
-            {createPiece(name as PieceName, color as PieceColor)}
+            {createPiece(piecePropsObject.name, piecePropsObject.color)}
         </div>
     )
 }

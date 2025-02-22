@@ -3,7 +3,7 @@ type PieceColor = "white" | "black";
 
 type Piece = {
     id: string
-    boardCode: string
+    pieceString: string
 }
 
 export type {Piece, PieceName, PieceColor}

@@ -8,7 +8,7 @@ type SquareProps = {
 }
 
 export default function Square({ piece, rowIndex, colIndex }: SquareProps) {
-    const id = `${7 - rowIndex}-${colIndex}`;
+    const id = `${rowIndex}-${colIndex}`;
 
     const { isOver, setNodeRef } = useDroppable({ id });
 
@@ -20,7 +20,7 @@ export default function Square({ piece, rowIndex, colIndex }: SquareProps) {
             }`}
             style={{ border: isOver ? "4px solid black" : undefined }}
         >
-            {piece && <Piece id={id} boardCode={piece} />}
+            {piece && <Piece id={id} pieceString={piece} />}
         </div>
     );
 }

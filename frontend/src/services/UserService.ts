@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {User} from '../types/User';
+import { User } from '../types/User';
 
 const userUrl = "http://localhost:3000/user";
 
@@ -12,7 +12,7 @@ async function saveUser(user: User){
     .catch(error => console.log(error));
 }
 
-async function getUser(email: String, password: String){
+async function getUser(email: string, password: string){
     await axios.get(userUrl, { params: {email, password} })
     .then(response => {
         console.log(response);
