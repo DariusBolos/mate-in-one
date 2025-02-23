@@ -52,6 +52,7 @@ export default function Board() {
         newBoard[x][y] = newBoard[initialX][initialY];
         newBoard[initialX][initialY] = null;
     
+        setValidMoves([]);
         setChessBoard(newBoard);
     };
 
@@ -63,9 +64,19 @@ export default function Board() {
             >
                 <div className="grid grid-cols-8 grid-rows-8 border-40 border-gray-800">
                 {chessBoard.map((row, rowIndex) =>
-                        row.map((pieceCode, colIndex) => (
-                            <Square key={`${rowIndex}-${colIndex}`} piece={pieceCode} rowIndex={rowIndex} colIndex={colIndex} />
-                        ))
+                        row.map((pieceCode, colIndex) => {
+                            const isValid = validMoves?.some(([row, col]) => row === rowIndex && col === colIndex);
+
+                            return (
+                                <Square 
+                                    key={`${rowIndex}-${colIndex}`} 
+                                    piece={pieceCode} 
+                                    rowIndex={rowIndex} 
+                                    colIndex={colIndex} 
+                                    isValidPosition={isValid}
+                                />
+                            )
+                        })
                     )}
                 </div>
             </DndContext>

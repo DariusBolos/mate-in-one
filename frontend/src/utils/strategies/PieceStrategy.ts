@@ -1,6 +1,8 @@
 export default abstract class PieceStrategy {
 
-    public isValidMove(_x: number, _y: number, _board: (string | null)[][], _color: string) {};
+    protected isValidMove(x: number, y: number, board: (string | null)[][], color: string) {
+        return x >= 0 && x < 8 && y >= 0 && y < 8 && !board[x][y]?.includes(color);
+    };
 
     public getValidMoves(_position: string, _board: (string | null)[][]) {}
 

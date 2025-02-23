@@ -8,7 +8,6 @@ export default class KingStrategy extends PieceStrategy {
 
     public getValidMoves(position: string, board: (string | null)[][]) {
         const [x, y] = stringToArray(position);
-
         const {color} = pieceStringToObj(board[x][y]!);
 
         const moves = [
@@ -17,9 +16,5 @@ export default class KingStrategy extends PieceStrategy {
         ];
 
         return moves.filter(([newX, newY]) => this.isValidMove(newX, newY, board, color));
-    }
-
-    public isValidMove(x: number, y: number, board: (string | null)[][], color: string) {
-        return x >= 0 && x < 8 && y >= 0 && y < 8 && !board[x][y]?.includes(color);
     }
 }

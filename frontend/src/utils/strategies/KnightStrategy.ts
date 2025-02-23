@@ -1,5 +1,5 @@
-import { BoardCoordinates } from "../../types/BoardCoordinates";
 import PieceStrategy from "./PieceStrategy";
+import { convertCooordinatesStringToArray as stringToArray, convertPieceStringToObject as pieceStringToObj } from "../Convertors";
 
 
 export default class KnightStrategy extends PieceStrategy {
@@ -7,11 +7,15 @@ export default class KnightStrategy extends PieceStrategy {
         super();
     }
 
-    public isValidMove(): boolean {
-        return true;
-    }
+    public getValidMoves(position: string, board: (string | null)[][]) {
+        const [x, y] = stringToArray(position);
+        const {color} = pieceStringToObj(board[x][y]!);
 
-    public getValidPositions(startPosition: BoardCoordinates) {
-        return startPosition;
+        const moves = [
+            [x + 2, y + 1], [x + 2, y - 1], [x - 2, y + 1], [x - 2, y - 1],
+            [x + 1, y + 2], [x + 1, y - 2], [x - 1, y + 2], [x - 1, y - 2] 
+        ];
+
+        return moves.filter(([newX, newY]) => this.isValidMove(newX, newY, board, color));
     }
 }
