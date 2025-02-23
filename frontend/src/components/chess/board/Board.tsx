@@ -5,6 +5,7 @@ import { BoardCoordinates } from '../../../types/BoardCoordinates';
 import { convertCooordinatesStringToObject as stringToObj, convertPieceStringToObject as pieceToObj, convertCooordinatesStringToArray as coordinatesToArray} from '../../../utils/Convertors';
 import { selectStrategy } from '../../../utils/strategies/StrategySelector';
 import { Strategy } from '../../../types/Strategy';
+import { PieceColor } from '../../../types/Piece';
 
 export default function Board() {
     const boardLetters = "ABCDEFGH";
@@ -25,11 +26,17 @@ export default function Board() {
     const [_moveStrategy , setMoveStrategy] = useState<Strategy | null>(null);
     const [initialPosition, setInitialPosition] = useState<number[]>([]);
     const [validMoves, setValidMoves] = useState<void | number[][]>([]);
+    const [moveColor, setMoveColor] = useState<PieceColor>("white");
 
     const handleDragStart = (event: DragStartEvent) => {
         const {active} = event; 
 
         const {rowIndex, colIndex}: BoardCoordinates = stringToObj(String(active.id));
+
+        if(!chessBoard[rowIndex][colIndex]?.includes(moveColor)) {
+            return ;
+        }
+
         const pieceObj = pieceToObj(chessBoard[rowIndex][colIndex] as string);
         const intermediaryStrategy = selectStrategy(pieceObj.name);
         setMoveStrategy(intermediaryStrategy);
@@ -38,7 +45,7 @@ export default function Board() {
     }
 
     const handleDragEnd = (event: DragEndEvent) => {
-        const { over } = event;
+        const {over} = event;
     
         const [x, y] = coordinatesToArray(String(over?.id));
         const [initialX, initialY] = initialPosition;
@@ -54,6 +61,7 @@ export default function Board() {
     
         setValidMoves([]);
         setChessBoard(newBoard);
+        moveColor === "white" ? setMoveColor("black") : setMoveColor("white");
     };
 
     return (
