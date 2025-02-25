@@ -7,7 +7,11 @@ import { selectStrategy } from '../../../utils/strategies/StrategySelector';
 import { Strategy } from '../../../types/Strategy';
 import { PieceColor } from '../../../types/Piece';
 
-export default function Board() {
+type Props = {
+    handleNewMoveDisplay: Function
+}
+
+export default function Board({handleNewMoveDisplay}: Props) {
     const boardLetters = "ABCDEFGH";
     const boardNumbers = "87654321";
 
@@ -61,13 +65,17 @@ export default function Board() {
     
         setValidMoves([]);
         setChessBoard(newBoard);
-        moveColor === "white" ? setMoveColor("black") : setMoveColor("white");
+
+        const moveCode = `${boardLetters.charAt(y)}${boardNumbers.charAt(8 - x)}`
+
+        moveColor === "white" ? (handleNewMoveDisplay("white", moveCode) || setMoveColor("black")) 
+            : (handleNewMoveDisplay("black", moveCode) || setMoveColor("black"));
     };
 
     return (
         <div className="relative">
             <DndContext
-                onDragStart={handleDragStart} 
+                onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
             >
                 <div className="grid grid-cols-8 grid-rows-8 border-40 border-gray-800">
