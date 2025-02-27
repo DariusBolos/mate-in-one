@@ -11,7 +11,8 @@ import { Turn } from "../../types/Turn";
 import { PieceColor } from "../../types/Piece";
 
 export default function GamePage() {
-  const { chessBoard, setChessBoard } = useChessBoard();
+  const { chessBoard, setChessBoard, moveColor, setMoveColor } =
+    useChessBoard();
   const [moves, setMoves] = useState<Move[]>([]);
   const [turn, setTurn] = useState<Turn>({
     player: "Player 1",
@@ -50,7 +51,11 @@ export default function GamePage() {
 
     setMoves([...moves]);
     setChessBoard(newBoard);
+
+    moveColor === "white" ? setMoveColor("black") : setMoveColor("white");
   };
+
+  // change the color back when reverting
 
   const changeTurn = (player: string, color: PieceColor) => {
     setTurn({ player, color });

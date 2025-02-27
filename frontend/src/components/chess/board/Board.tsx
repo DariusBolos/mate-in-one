@@ -9,7 +9,6 @@ import {
 } from "../../../utils/Convertors";
 import { selectStrategy } from "../../../utils/strategies/StrategySelector";
 import { Strategy } from "../../../types/Strategy";
-import { PieceColor } from "../../../types/Piece";
 import { useChessBoard } from "../../../hooks/chessBoardHooks";
 
 type Props = {
@@ -24,11 +23,11 @@ export default function Board({
   const boardLetters = "ABCDEFGH";
   const boardNumbers = "87654321";
 
-  const { chessBoard, setChessBoard } = useChessBoard();
+  const { chessBoard, moveColor, setChessBoard, setMoveColor } =
+    useChessBoard();
   const [_moveStrategy, setMoveStrategy] = useState<Strategy | null>(null);
   const [initialPosition, setInitialPosition] = useState<number[]>([]);
   const [validMoves, setValidMoves] = useState<void | number[][]>([]);
-  const [moveColor, setMoveColor] = useState<PieceColor>("white");
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
