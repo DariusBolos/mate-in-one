@@ -1,7 +1,5 @@
-import LandingBanner from "../../components/landing/landingBanner/LandingBanner"
+import LandingBanner from "../../components/landing/landingBanner/LandingBanner";
 
 export default function LandingPage() {
-    return (
-        <LandingBanner/>
-    )
+  return <LandingBanner />;
 }
