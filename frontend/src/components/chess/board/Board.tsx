@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DndContext, DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import Square from "./Square";
 import { BoardCoordinates } from "../../../types/BoardCoordinates";
@@ -25,9 +25,13 @@ export default function Board({
 
   const { chessBoard, moveColor, setChessBoard, setMoveColor } =
     useChessBoard();
-  const [_moveStrategy, setMoveStrategy] = useState<Strategy | null>(null);
+  const [moveStrategy, setMoveStrategy] = useState<Strategy | null>(null);
   const [initialPosition, setInitialPosition] = useState<number[]>([]);
   const [validMoves, setValidMoves] = useState<void | number[][]>([]);
+
+  useEffect(() => {
+    handleWhiteControlledSquaresUpdate();
+  }, [moveStrategy]);
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
@@ -89,6 +93,10 @@ export default function Board({
     setChessBoard(newBoard);
 
     moveColor === "white" ? setMoveColor("black") : setMoveColor("white");
+  };
+
+  const handleWhiteControlledSquaresUpdate = () => {
+    moveStrategy?.updateControlledPositions(chessBoard);
   };
 
   return (

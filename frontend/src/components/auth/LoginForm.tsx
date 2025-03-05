@@ -1,6 +1,6 @@
 import { NavLink } from "react-router";
 import logo from "../../assets/logo.png";
-import PasswordInput from "../shared/passwordInput/PasswordInput";
+import PasswordInput from "../shared/password-input/PasswordInput";
 import { FormEvent, useRef } from "react";
 import { getUser } from "../../services/UserService";
 

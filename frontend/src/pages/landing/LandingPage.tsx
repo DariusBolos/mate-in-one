@@ -1,4 +1,4 @@
-import LandingBanner from "../../components/landing/landingBanner/LandingBanner";
+import LandingBanner from "../../components/landing/landing-banner/LandingBanner";
 
 export default function LandingPage() {
   return <LandingBanner />;

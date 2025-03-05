@@ -53,9 +53,10 @@ export default function GamePage() {
     setChessBoard(newBoard);
 
     moveColor === "white" ? setMoveColor("black") : setMoveColor("white");
+    moveColor === "white"
+      ? setTurn({ player: "Player2", color: "black" })
+      : setTurn({ player: "Player1", color: "white" });
   };
-
-  // change the color back when reverting
 
   const changeTurn = (player: string, color: PieceColor) => {
     setTurn({ player, color });

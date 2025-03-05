@@ -1,6 +1,6 @@
 import { PhotoIcon } from "@heroicons/react/24/solid";
 import logo from "../../assets/logo.png";
-import PasswordInput from "../shared/passwordInput/PasswordInput";
+import PasswordInput from "../shared/password-input/PasswordInput";
 import { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { User } from "../../types/User";
 import { saveUser } from "../../services/UserService";
