@@ -3,13 +3,9 @@ import { convertPieceStringToObject as stringToObj } from "../Convertors";
 
 export default abstract class PieceStrategy {
   private strategyType: string;
-  private whiteControlledPositions: number[][];
-  private blackControlledPositions: number[][];
 
   constructor(argType: string) {
     this.strategyType = argType;
-    this.whiteControlledPositions = [];
-    this.blackControlledPositions = [];
   }
 
   protected isValidMove(
@@ -18,54 +14,28 @@ export default abstract class PieceStrategy {
     board: (string | null)[][],
     color: string
   ) {
-    if (this.isKingInCheck(board, color)) {
-      return false;
-    }
-
-    return (
-      x >= 0 &&
-      x < 8 &&
-      y >= 0 &&
-      y < 8 &&
-      !board[x][y]?.includes(color) &&
-      !board[x][y]?.includes("king")
-    );
+    return x >= 0 && x < 8 && y >= 0 && y < 8 && !board[x][y]?.includes(color);
   }
 
-  public getValidMoves(_position: string, _board: (string | null)[][]) {}
+  public getValidMoves(
+    _position: string,
+    _board: (string | null)[][]
+  ): number[][] {
+    return [];
+  }
+
+  public getCapturingPositions(
+    _position: string,
+    _board: (string | null)[][]
+  ): number[][] {
+    return [];
+  }
 
   public getStrategyType() {
     return this.strategyType;
   }
 
-  private isKingInCheck(board: (string | null)[][], color: string) {
-    const controlledPositions: any = {
-      white: this.blackControlledPositions,
-      black: this.whiteControlledPositions,
-    };
-
-    board.forEach((row: (string | null)[], rowIndex: number) =>
-      row.forEach((_col: string | null, colIndex: number) => {
-        if (board[rowIndex][colIndex] === `king-${color}`) {
-          const controlled: number[][] = controlledPositions[color];
-
-          if (
-            controlled.some(
-              ([row, col]) => row === rowIndex && col === colIndex
-            )
-          ) {
-            return true;
-          }
-        }
-
-        return false;
-      })
-    );
-
-    return false;
-  }
-
-  public updateControlledPositions(board: (string | null)[][]) {
+  public getControlledPositions(board: (string | null)[][]) {
     let whiteControlled: number[][] = [];
     let blackControlled: number[][] = [];
 
@@ -74,6 +44,30 @@ export default abstract class PieceStrategy {
         if (square !== null) {
           const piece = stringToObj(square);
           const strategy = selectStrategy(piece.name);
+
+          if (square === "pawn-white") {
+            whiteControlled = [
+              ...whiteControlled,
+              ...strategy.getCapturingPositions(
+                `${rowIndex}-${colIndex}`,
+                board
+              ),
+            ];
+
+            return;
+          }
+
+          if (square === "pawn-black") {
+            blackControlled = [
+              ...blackControlled,
+              ...strategy.getCapturingPositions(
+                `${rowIndex}-${colIndex}`,
+                board
+              ),
+            ];
+
+            return;
+          }
 
           if (piece.color === "white") {
             whiteControlled = [
@@ -92,15 +86,9 @@ export default abstract class PieceStrategy {
       });
     });
 
-    this.whiteControlledPositions = [...whiteControlled];
-    this.blackControlledPositions = [...blackControlled];
-  }
-
-  public getWhiteControlledPositions() {
-    return this.whiteControlledPositions;
-  }
-
-  public getBlackControlledPositions() {
-    return this.blackControlledPositions;
+    return {
+      whiteControlled,
+      blackControlled,
+    };
   }
 }

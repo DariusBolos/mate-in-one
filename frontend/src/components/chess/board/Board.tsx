@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { DndContext, DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import Square from "./Square";
 import { BoardCoordinates } from "../../../types/BoardCoordinates";
@@ -9,7 +9,11 @@ import {
 } from "../../../utils/Convertors";
 import { selectStrategy } from "../../../utils/strategies/StrategySelector";
 import { Strategy } from "../../../types/Strategy";
-import { useChessBoard } from "../../../hooks/chessBoardHooks";
+import {
+  useChessStore,
+  useControlledStore,
+} from "../../../hooks/chessBoardHooks";
+import { Move } from "../../../types/Move";
 
 type Props = {
   handleNewMoveRegistration: Function;
@@ -24,14 +28,16 @@ export default function Board({
   const boardNumbers = "87654321";
 
   const { chessBoard, moveColor, setChessBoard, setMoveColor } =
-    useChessBoard();
+    useChessStore();
   const [moveStrategy, setMoveStrategy] = useState<Strategy | null>(null);
   const [initialPosition, setInitialPosition] = useState<number[]>([]);
-  const [validMoves, setValidMoves] = useState<void | number[][]>([]);
-
-  useEffect(() => {
-    handleWhiteControlledSquaresUpdate();
-  }, [moveStrategy]);
+  const [validMoves, setValidMoves] = useState<number[][]>([]);
+  const {
+    whiteControlled,
+    blackControlled,
+    setWhiteControlled,
+    setBlackControlled,
+  } = useControlledStore();
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
@@ -79,24 +85,82 @@ export default function Board({
   ) => {
     const newBoard = chessBoard.map((row) => [...row]);
 
-    handleNewMoveRegistration(
-      { rowIndex: x2, colIndex: y2 },
-      { rowIndex: x1, colIndex: y1 },
-      newBoard[x2][y2],
-      newBoard[x1][y1]
-    );
+    const ongoingMove: Move = {
+      startPosition: { rowIndex: x2, colIndex: y2 },
+      endPosition: { rowIndex: x1, colIndex: y1 },
+      movedPiece: newBoard[x2][y2]!,
+      capturedPiece: newBoard[x1][y1],
+    };
 
     newBoard[x1][y1] = newBoard[x2][y2];
     newBoard[x2][y2] = null;
 
+    const { newWhiteControlled, newBlackControlled } =
+      getUpdatedControlledSquares(newBoard);
+
+    let check = false;
+
+    if (moveColor === "white") {
+      check = isCheck(newBoard, newBlackControlled);
+    } else {
+      check = isCheck(newBoard, newWhiteControlled);
+    }
+
+    if (check) {
+      alert("CHECK!!");
+      return;
+    }
+
+    handleNewMoveRegistration(ongoingMove);
     setValidMoves([]);
     setChessBoard(newBoard);
+    setWhiteControlled(newWhiteControlled);
+    setBlackControlled(newBlackControlled);
 
     moveColor === "white" ? setMoveColor("black") : setMoveColor("white");
   };
 
-  const handleWhiteControlledSquaresUpdate = () => {
-    moveStrategy?.updateControlledPositions(chessBoard);
+  const isCheck = (
+    chessBoard: (string | null)[][],
+    controlledBoard: boolean[][]
+  ) => {
+    let check = false;
+
+    chessBoard.forEach((row, rowIndex) =>
+      row.forEach((squareString, colIndex) => {
+        if (squareString === `king-${moveColor}`) {
+          if (controlledBoard[rowIndex][colIndex]) check = true;
+        }
+      })
+    );
+
+    return check;
+  };
+
+  const getUpdatedControlledSquares = (board: (string | null)[][]) => {
+    const controlledSquares:
+      | {
+          whiteControlled: number[][];
+          blackControlled: number[][];
+        }
+      | undefined = moveStrategy?.getControlledPositions(board);
+
+    const newWhiteControlled = whiteControlled.map((row) =>
+      row.map(() => false)
+    );
+    const newBlackControlled = blackControlled.map((row) =>
+      row.map(() => false)
+    );
+
+    controlledSquares?.whiteControlled.forEach(([row, col]) => {
+      newWhiteControlled[row][col] = true;
+    });
+
+    controlledSquares?.blackControlled.forEach(([row, col]) => {
+      newBlackControlled[row][col] = true;
+    });
+
+    return { newWhiteControlled, newBlackControlled };
   };
 
   return (

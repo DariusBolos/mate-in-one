@@ -8,7 +8,6 @@ import RegisterPage from "./pages/auth/RegisterPage.tsx";
 import DashboardPage from "./pages/dashboard/DashboardPage.tsx";
 import GamePage from "./pages/game/GamePage.tsx";
 import AboutPage from "./pages/about/AboutPage.tsx";
-import { ChessBoardProvider } from "./context/ChessBoardContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -18,14 +17,7 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
-        <Route
-          path="/game"
-          element={
-            <ChessBoardProvider>
-              <GamePage />
-            </ChessBoardProvider>
-          }
-        ></Route>
+        <Route path="/game" element={<GamePage />}></Route>
         <Route path="/about" element={<AboutPage />}></Route>
       </Routes>
     </BrowserRouter>
