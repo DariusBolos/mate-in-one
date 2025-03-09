@@ -3,7 +3,7 @@ import { PieceColor } from "../types/Piece";
 
 type Cell = string | null;
 type ChessBoardType = Cell[][];
-type ControlledBoardType = Boolean[][];
+type ControlledBoardType = boolean[][];
 
 interface ChessBoardState {
   chessBoard: ChessBoardType;
@@ -19,52 +19,63 @@ interface ControlledState {
   setBlackControlled: (board: ControlledBoardType) => void;
 }
 
+// [
+// [
+// "rook-black",
+// "knight-black",
+// "bishop-black",
+// "queen-black",
+// "king-black",
+// "bishop-black",
+// "knight-black",
+// "rook-black",
+// ],
+// [
+// "pawn-black",
+// "pawn-black",
+// "pawn-black",
+// "pawn-black",
+// "pawn-black",
+// "pawn-black",
+// "pawn-black",
+// "pawn-black",
+// ],
+// [null, null, null, null, null, null, null, null],
+// [null, null, null, null, null, null, null, null],
+// [null, null, null, null, null, null, null, null],
+// [null, null, null, null, null, null, null, null],
+// [
+// "pawn-white",
+// "pawn-white",
+// "pawn-white",
+// "pawn-white",
+// "pawn-white",
+// "pawn-white",
+// "pawn-white",
+// "pawn-white",
+// ],
+// [
+// "rook-white",
+// "knight-white",
+// "bishop-white",
+// "queen-white",
+// "king-white",
+// "bishop-white",
+// "knight-white",
+// "rook-white",
+// ],
+// ],
+
 const useChessStore = create<ChessBoardState>((set) => ({
   chessBoard: [
-    [
-      "rook-black",
-      "knight-black",
-      "bishop-black",
-      "queen-black",
-      "king-black",
-      "bishop-black",
-      "knight-black",
-      "rook-black",
-    ],
-    [
-      "pawn-black",
-      "pawn-black",
-      "pawn-black",
-      "pawn-black",
-      "pawn-black",
-      "pawn-black",
-      "pawn-black",
-      "pawn-black",
-    ],
+    ["rook-black", null, null, null, "king-black", null, null, "rook-black"],
     [null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
-    [
-      "pawn-white",
-      "pawn-white",
-      "pawn-white",
-      "pawn-white",
-      "pawn-white",
-      "pawn-white",
-      "pawn-white",
-      "pawn-white",
-    ],
-    [
-      "rook-white",
-      "knight-white",
-      "bishop-white",
-      "queen-white",
-      "king-white",
-      "bishop-white",
-      "knight-white",
-      "rook-white",
-    ],
+    [null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null],
+    ["rook-white", null, null, null, "king-white", null, null, "rook-white"],
   ],
   moveColor: "white",
   setChessBoard: (board) => set({ chessBoard: board }),

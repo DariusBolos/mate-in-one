@@ -56,6 +56,7 @@ export default function GamePage() {
         <Board
           handleNewMoveRegistration={registerNewMove}
           handleTurnChange={changeTurn}
+          previousMoves={moves}
         />
         <PlayerBanner username="Player 1" avatar="" />
       </div>
