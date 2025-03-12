@@ -1,4 +1,3 @@
-/** eslint-disable @typescript-eslint/no-unused-expressions */
 import { useState } from "react";
 import { DndContext, DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import Square from "./Square";
@@ -104,12 +103,14 @@ export default function Board({
     };
 
     // to be refactored, works for now
+    // castling logic
     if (newBoard[x2][y2]?.includes("king")) {
       if (y1 === y2 + 2) {
         newBoard[x2][y2 + 2] = newBoard[x2][y2];
         newBoard[x2][y2 + 1] = newBoard[x2][7];
         newBoard[x2][7] = null;
         newBoard[x2][y2] = null;
+        // ongoingMove = {...ongoingMove, endPosition: {rowIndex: x1, colIndex: y1 + 1}}
       } else if (y1 === y2 - 2) {
         newBoard[x2][y2 - 2] = newBoard[x2][y2];
         newBoard[x2][y2 - 1] = newBoard[x2][0];
@@ -127,7 +128,7 @@ export default function Board({
     const { newWhiteControlled, newBlackControlled } =
       getUpdatedControlledSquares(newBoard);
 
-    let isCheckOnKing = false;
+    let isCheckOnKing;
 
     if (moveColor === "white") {
       isCheckOnKing = isCheck(newBoard, newBlackControlled);
@@ -223,6 +224,9 @@ export default function Board({
         return;
       }
     });
+
+    shortCastle = shortCastle && !isSquareAttacked(row, 5) && !isSquareAttacked(row, 6);
+    longCastle = longCastle && !isSquareAttacked(row, 2) && !isSquareAttacked(row, 3);
 
     shortCastle && setValidMoves((prev) => [...prev, [row, col + 2]]);
     longCastle && setValidMoves((prev) => [...prev, [row, col - 2]]);

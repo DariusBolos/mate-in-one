@@ -68,16 +68,16 @@ interface ControlledState {
 
 const useChessStore = create<ChessBoardState>((set) => ({
   chessBoard: [
-    ["rook-black", null, null, null, "king-black", null, null, "rook-black"],
+    ["rook-black", "knight-black", "bishop-black", "queen-black", "king-black", "bishop-black", "knight-black", "rook-black"],
+    ["pawn-black", "pawn-black", "pawn-black", "pawn-black", "pawn-black", "pawn-black", "pawn-black", "pawn-black"],
+    [null, null, null, null, null, null, null, null],
+    [null, null, null, "pawn-white", null, null, null, null],
     [null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null, null],
-    ["rook-white", null, null, null, "king-white", null, null, "rook-white"],
+    ["pawn-white", "pawn-white", "pawn-white", null, "pawn-white", "pawn-white", "pawn-white", "pawn-white"],
+    ["rook-white", "knight-white", "bishop-white", "queen-white", "king-white", "bishop-white", "knight-white", "rook-white"]
   ],
-  moveColor: "white",
+  moveColor: "black",
   setChessBoard: (board) => set({ chessBoard: board }),
   setMoveColor: (color) => set({ moveColor: color }),
 }));

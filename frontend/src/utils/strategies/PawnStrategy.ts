@@ -13,11 +13,11 @@ export default class PawnStrategy extends PieceStrategy {
     position: string,
     board: (string | null)[][]
   ): number[][] {
-    let [x, y] = stringToArray(position);
+    const [x, y] = stringToArray(position);
 
     const { color } = pieceStringToObj(board[x][y]!);
 
-    let moves: number[][] = [];
+    const moves: number[][] = [];
 
     if (color === "white") {
       moves.push([x - 1, y + 1], [x - 1, y - 1]);
@@ -33,7 +33,7 @@ export default class PawnStrategy extends PieceStrategy {
   }
 
   public getValidMoves(position: string, board: (string | null)[][]) {
-    let [x, y] = stringToArray(position);
+    const [x, y] = stringToArray(position);
 
     const { color } = pieceStringToObj(board[x][y]!);
 
