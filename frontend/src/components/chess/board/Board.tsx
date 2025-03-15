@@ -65,6 +65,10 @@ export default function Board({
       setCastlingPositions(rowIndex, colIndex);
     }
 
+    if (pieceObj.name === "pawn") {
+      setEnPassantPositions(rowIndex, colIndex);
+    }
+
     setInitialPosition([rowIndex, colIndex]);
   };
 
@@ -121,6 +125,15 @@ export default function Board({
         newBoard[x2][y2] = null;
       }
     } else {
+      // en passant logic
+      if(newBoard[x2][y2]?.includes("pawn") && newBoard[x2][y2 + 1]?.includes("pawn") && y1 != y2) {
+        !newBoard[x2][y2 + 1]?.includes(moveColor) && (newBoard[x2][y2 + 1] = null);
+      }
+
+      if(newBoard[x2][y2]?.includes("pawn") && newBoard[x2][y2 - 1]?.includes("pawn") && y1 != y2) {
+        !newBoard[x2][y2 - 1]?.includes(moveColor) && (newBoard[x2][y2 - 1] = null);
+      }
+
       newBoard[x1][y1] = newBoard[x2][y2];
       newBoard[x2][y2] = null;
     }
@@ -231,6 +244,56 @@ export default function Board({
     shortCastle && setValidMoves((prev) => [...prev, [row, col + 2]]);
     longCastle && setValidMoves((prev) => [...prev, [row, col - 2]]);
   };
+
+  // const setEnPassantPositions = (row: number, col: number) => {
+  //   let isValid = true;
+  //   const lastMove = previousMoves[previousMoves.length - 1];
+  //
+  //   if(!lastMove) return ;
+  //
+  //   if (!lastMove.movedPiece.includes("pawn") || lastMove.movedPiece.includes(moveColor)) {
+  //     isValid = false;
+  //   }
+  //
+  //   // bug when piece is not captured solution: check if piece is in valid en passant position
+  //   if(moveColor === "white") {
+  //     row !== 3 ? isValid = false : undefined;
+  //
+  //     isValid && chessBoard[row][col + 1]?.includes("black") && setValidMoves((prev) => [...prev, [row - 1, col + 1]]);
+  //     isValid && chessBoard[row][col - 1]?.includes("black") && setValidMoves((prev) => [...prev, [row - 1, col - 1]]);
+  //   }
+  //
+  //   if(moveColor === "black") {
+  //     row !== 4 ? isValid = false : undefined;
+  //
+  //     isValid && chessBoard[row][col + 1]?.includes("white") && setValidMoves((prev) => [...prev, [row + 1, col + 1]]);
+  //     isValid && chessBoard[row][col - 1]?.includes("white") && setValidMoves((prev) => [...prev, [row + 1, col - 1]]);
+  //   }
+  // }
+
+  const setEnPassantPositions = (row: number, col: number) => {
+    const lastMove = previousMoves[previousMoves.length - 1];
+    if (!lastMove) return;
+
+    const { startPosition, endPosition, movedPiece } = lastMove;
+
+    const isPawnMove = movedPiece.includes("pawn");
+    const movedTwoSquares = Math.abs(startPosition.rowIndex - endPosition.rowIndex) === 2;
+    const correctStartRow = movedPiece.includes("white") ? startPosition.rowIndex === 6 : startPosition.rowIndex === 1;
+
+    if (!isPawnMove || !movedTwoSquares || !correctStartRow) return;
+
+    if (moveColor === "white" && row === 3 && endPosition.rowIndex === 3) {
+      if (endPosition.colIndex === col + 1) setValidMoves((prev) => [...prev, [row - 1, col + 1]]);
+      if (endPosition.colIndex === col - 1) setValidMoves((prev) => [...prev, [row - 1, col - 1]]);
+    }
+
+    if (moveColor === "black" && row === 4 && endPosition.rowIndex === 4) {
+      if (endPosition.colIndex === col + 1) setValidMoves((prev) => [...prev, [row + 1, col + 1]]);
+      if (endPosition.colIndex === col - 1) setValidMoves((prev) => [...prev, [row + 1, col - 1]]);
+    }
+  };
+
 
   const isSquareAttacked = (row: number, col: number) => {
     const color = moveColor === "white" ? "black" : "white";
