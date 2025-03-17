@@ -1,14 +1,14 @@
 import { PieceName, PieceColor } from "../types/Piece";
 
 const createPiece = (name: PieceName, color: PieceColor) => {
-  const pieceStyle = `w-20 h-20 flex items-center justify-center text-6xl text-${color}`;
+  const pieceStyle = `w-20 h-20 flex items-center justify-center text-6xl`;
 
   const pieces = {
     king: (
       <span className={pieceStyle} id={`${name}-${color}`}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
+          fill={`${color}`}
           height="1em"
           viewBox="0 0 448 512"
         >
@@ -20,7 +20,7 @@ const createPiece = (name: PieceName, color: PieceColor) => {
       <span className={pieceStyle} id={`${name}-${color}`}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
+          fill={`${color}`}
           height="1em"
           viewBox="0 0 512 512"
         >
@@ -32,7 +32,7 @@ const createPiece = (name: PieceName, color: PieceColor) => {
       <span className={pieceStyle} id={`${name}-${color}`}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
+          fill={`${color}`}
           height="1em"
           viewBox="0 0 320 512"
         >
@@ -44,7 +44,7 @@ const createPiece = (name: PieceName, color: PieceColor) => {
       <span className={pieceStyle} id={`${name}-${color}`}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
+          fill={`${color}`}
           height="1em"
           viewBox="0 0 448 512"
         >
@@ -56,7 +56,7 @@ const createPiece = (name: PieceName, color: PieceColor) => {
       <span className={pieceStyle} id={`${name}-${color}`}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
+          fill={`${color}`}
           height="1em"
           viewBox="0 0 448 512"
         >
@@ -68,7 +68,7 @@ const createPiece = (name: PieceName, color: PieceColor) => {
       <span className={pieceStyle} id={`${name}-${color}`}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
+          fill={`${color}`}
           height="1em"
           viewBox="0 0 320 512"
         >

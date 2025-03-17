@@ -8,18 +8,21 @@ import RegisterPage from "./pages/auth/RegisterPage.tsx";
 import DashboardPage from "./pages/dashboard/DashboardPage.tsx";
 import GamePage from "./pages/game/GamePage.tsx";
 import AboutPage from "./pages/about/AboutPage.tsx";
+import { ThemeProvider } from "next-themes";
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/game" element={<GamePage />}></Route>
-                <Route path="/about" element={<AboutPage />}></Route>
-            </Routes>
-        </BrowserRouter>
+        <ThemeProvider attribute="class" defaultTheme="dark">
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegisterPage />} />
+                    <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route path="/game" element={<GamePage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                </Routes>
+            </BrowserRouter>
+        </ThemeProvider>
     </StrictMode>
 );

@@ -1,20 +1,22 @@
-import { useState } from "react";
+import {useRef, useState} from "react";
 import { DndContext, DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import Square from "./Square";
-import { BoardCoordinates } from "../../../types/BoardCoordinates";
+import PawnChangeDialog from "@/components/chess/ui/PawnChangeDialog.tsx";
+import { BoardCoordinates } from "@/types/BoardCoordinates.ts";
 import {
   convertCooordinatesStringToObject as stringToObj,
   convertPieceStringToObject as pieceToObj,
   convertCooordinatesStringToArray as coordinatesToArray,
 } from "../../../utils/Convertors";
-import { selectStrategy } from "../../../utils/strategies/StrategySelector";
-import { Strategy } from "../../../types/Strategy";
+import { selectStrategy } from "@/utils/strategies/StrategySelector.ts";
+import { Strategy } from "@/types/Strategy.ts";
 import {
   useChessStore,
   useControlledStore,
-} from "../../../hooks/chessBoardHooks";
-import { Move } from "../../../types/Move";
-import { PieceColor } from "../../../types/Piece";
+} from "@/hooks/chessBoardHooks.ts";
+import { Move } from "@/types/Move.ts";
+import { PieceColor } from "@/types/Piece.ts";
+import { MouseEvent } from "react";
 
 type Props = {
   handleNewMoveRegistration: (newMove: Move) => void;
@@ -41,6 +43,9 @@ export default function Board({
     setWhiteControlled,
     setBlackControlled,
   } = useControlledStore();
+
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const resolvePromotionRef = useRef<((value: string) => void) | null>(null);
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
@@ -82,7 +87,7 @@ export default function Board({
       return;
     }
 
-    handleBoardUpdate(x, y, initialX, initialY);
+    handleBoardUpdate(x, y, initialX, initialY).then();
 
     if (moveColor === "white") {
       handleTurnChange("Player 2", "black");
@@ -91,7 +96,7 @@ export default function Board({
     }
   };
 
-  const handleBoardUpdate = (
+  const handleBoardUpdate = async (
     x1: number,
     y1: number,
     x2: number,
@@ -126,12 +131,19 @@ export default function Board({
       }
     } else {
       // en passant logic
-      if(newBoard[x2][y2]?.includes("pawn") && newBoard[x2][y2 + 1]?.includes("pawn") && y1 != y2) {
+      if (newBoard[x2][y2]?.includes("pawn") && newBoard[x2][y2 + 1]?.includes("pawn") && y1 != y2) {
         !newBoard[x2][y2 + 1]?.includes(moveColor) && (newBoard[x2][y2 + 1] = null);
       }
 
-      if(newBoard[x2][y2]?.includes("pawn") && newBoard[x2][y2 - 1]?.includes("pawn") && y1 != y2) {
+      if (newBoard[x2][y2]?.includes("pawn") && newBoard[x2][y2 - 1]?.includes("pawn") && y1 != y2) {
         !newBoard[x2][y2 - 1]?.includes(moveColor) && (newBoard[x2][y2 - 1] = null);
+      }
+
+      if(newBoard[x2][y2]?.includes("pawn") && (x1 === 0 || x1 === 7)) {
+        await handlePawnPromotion()
+             .then((newPiece) => {
+               newBoard[x2][y2] = newPiece;
+             })
       }
 
       newBoard[x1][y1] = newBoard[x2][y2];
@@ -184,6 +196,10 @@ export default function Board({
     return check;
   };
 
+  // const isCheckMate = () => {
+  //
+  // }
+
   const getUpdatedControlledSquares = (board: (string | null)[][]) => {
     const controlledSquares:
       | {
@@ -213,6 +229,18 @@ export default function Board({
   const setCastlingPositions = (row: number, col: number) => {
     let shortCastle = true;
     let longCastle = true;
+
+    if(chessBoard[row][col + 1] || chessBoard[row][col + 2]) {
+      shortCastle = false;
+    }
+
+    if(chessBoard[row][col - 1] || chessBoard[row][col - 2] || chessBoard[row][col - 3]){
+      longCastle = false;
+    }
+
+    if(!shortCastle && !longCastle) {
+      return ;
+    }
 
     previousMoves.forEach((move) => {
       if (move.movedPiece === `king-${moveColor}`) {
@@ -245,32 +273,6 @@ export default function Board({
     longCastle && setValidMoves((prev) => [...prev, [row, col - 2]]);
   };
 
-  // const setEnPassantPositions = (row: number, col: number) => {
-  //   let isValid = true;
-  //   const lastMove = previousMoves[previousMoves.length - 1];
-  //
-  //   if(!lastMove) return ;
-  //
-  //   if (!lastMove.movedPiece.includes("pawn") || lastMove.movedPiece.includes(moveColor)) {
-  //     isValid = false;
-  //   }
-  //
-  //   // bug when piece is not captured solution: check if piece is in valid en passant position
-  //   if(moveColor === "white") {
-  //     row !== 3 ? isValid = false : undefined;
-  //
-  //     isValid && chessBoard[row][col + 1]?.includes("black") && setValidMoves((prev) => [...prev, [row - 1, col + 1]]);
-  //     isValid && chessBoard[row][col - 1]?.includes("black") && setValidMoves((prev) => [...prev, [row - 1, col - 1]]);
-  //   }
-  //
-  //   if(moveColor === "black") {
-  //     row !== 4 ? isValid = false : undefined;
-  //
-  //     isValid && chessBoard[row][col + 1]?.includes("white") && setValidMoves((prev) => [...prev, [row + 1, col + 1]]);
-  //     isValid && chessBoard[row][col - 1]?.includes("white") && setValidMoves((prev) => [...prev, [row + 1, col - 1]]);
-  //   }
-  // }
-
   const setEnPassantPositions = (row: number, col: number) => {
     const lastMove = previousMoves[previousMoves.length - 1];
     if (!lastMove) return;
@@ -294,7 +296,6 @@ export default function Board({
     }
   };
 
-
   const isSquareAttacked = (row: number, col: number) => {
     const color = moveColor === "white" ? "black" : "white";
     const controlledSquares =
@@ -302,6 +303,32 @@ export default function Board({
 
     return controlledSquares[row][col];
   };
+
+
+  const getPawnPromotionPiece = (e: MouseEvent<HTMLDivElement>) => {
+    if (resolvePromotionRef.current) {
+      const selectedPiece = e.currentTarget.id;
+      resolvePromotionRef.current(selectedPiece);
+      resolvePromotionRef.current = null;
+    } else {
+      console.error("No promise to resolve.");
+    }
+  };
+
+  const waitForPawnPromotion = (): Promise<string> => {
+    return new Promise<string>((resolve) => {
+      resolvePromotionRef.current = resolve;
+    });
+  };
+
+  const handlePawnPromotion = async () => {
+    setDialogOpen(true);
+    const newPiece = await waitForPawnPromotion();
+    setDialogOpen(false);
+
+    return newPiece;
+  };
+
 
   return (
     <div className="relative">
@@ -345,6 +372,8 @@ export default function Board({
           </span>
         ))}
       </div>
+
+      <PawnChangeDialog isOpen={isDialogOpen} chooseNewPiece={getPawnPromotionPiece} color={moveColor}/>
     </div>
   );
 }

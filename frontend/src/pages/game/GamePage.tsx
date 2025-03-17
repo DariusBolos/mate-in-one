@@ -3,11 +3,11 @@ import Board from "../../components/chess/board/Board";
 import MoveTracker from "../../components/chess/ui/MoveTracker";
 import PlayerBanner from "../../components/chess/ui/PlayerBanner";
 import TurnBanner from "../../components/chess/ui/TurnBanner";
-import { Move } from "../../types/Move";
+import { Move } from "@/types/Move.ts";
 import DefaultButton from "../../components/shared/button/DefaultButton";
-import { useChessStore } from "../../hooks/chessBoardHooks";
-import { Turn } from "../../types/Turn";
-import { PieceColor } from "../../types/Piece";
+import { useChessStore } from "@/hooks/chessBoardHooks.ts";
+import { Turn } from "@/types/Turn.ts";
+import { PieceColor } from "@/types/Piece.ts";
 
 export default function GamePage() {
   const { chessBoard, setChessBoard, moveColor, setMoveColor } =

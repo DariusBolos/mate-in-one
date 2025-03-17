@@ -1,7 +1,7 @@
 import createPiece from "../../../utils/PieceFactory";
 import { Piece as PieceProps } from "../../../types/Piece";
 import { useDraggable } from "@dnd-kit/core";
-import { convertPieceStringToObject } from "../../../utils/Convertors";
+import { convertPieceStringToObject } from "@/utils/Convertors.ts";
 
 export default function Piece({ id, pieceString }: PieceProps) {
   const piecePropsObject = convertPieceStringToObject(pieceString);
