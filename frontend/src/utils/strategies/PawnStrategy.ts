@@ -1,5 +1,5 @@
 import {
-  convertCooordinatesStringToArray as stringToArray,
+  convertCoordinatesStringToArray as stringToArray,
   convertPieceStringToObject as pieceStringToObj,
 } from "../Convertors";
 import PieceStrategy from "./PieceStrategy";

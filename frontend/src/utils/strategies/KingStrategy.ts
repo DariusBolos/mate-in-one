@@ -1,7 +1,7 @@
 import PieceStrategy from "./PieceStrategy";
 import {
   convertPieceStringToObject as pieceStringToObj,
-  convertCooordinatesStringToArray as stringToArray,
+  convertCoordinatesStringToArray as stringToArray,
 } from "../Convertors";
 
 export default class KingStrategy extends PieceStrategy {

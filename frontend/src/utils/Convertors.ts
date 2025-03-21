@@ -10,7 +10,7 @@ const convertCooordinatesStringToObject = (boardCode: string) => {
   } as BoardCoordinates;
 };
 
-const convertCooordinatesStringToArray = (boardCode: string) => {
+const convertCoordinatesStringToArray = (boardCode: string) => {
   const [row, col] = boardCode.split("-");
   return [Number(row), Number(col)];
 };
@@ -24,13 +24,8 @@ const convertPieceStringToObject = (pieceString: string) => {
   };
 };
 
-const convertCoordinatesToString = (rowIndex: number, colIndex: number) => {
-  return `${rowIndex}-${colIndex}`;
-};
-
 export {
   convertCooordinatesStringToObject,
-  convertCooordinatesStringToArray,
+  convertCoordinatesStringToArray,
   convertPieceStringToObject,
-  convertCoordinatesToString,
 };

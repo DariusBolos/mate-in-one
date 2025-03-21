@@ -67,16 +67,27 @@ interface ControlledState {
 // ],
 
 const useChessStore = create<ChessBoardState>((set) => ({
+  // chessBoard: [
+  //   ["rook-black", "knight-black", "bishop-black", "queen-black", "king-black", "bishop-black", "knight-black", "rook-black"],
+  //   ["pawn-black", "pawn-black", "pawn-black", "pawn-black", "pawn-black", "pawn-black", "pawn-black", "pawn-black"],
+  //   [null, null, null, null, null, null, null, null],
+  //   [null, null, null, null, null, null, null, null],
+  //   [null, null, null, null, null, null, null, null],
+  //   [null, null, null, null, null, null, null, null],
+  //   ["pawn-white", "pawn-white", "pawn-white", "pawn-white", "pawn-white", "pawn-white", "pawn-white", "pawn-white"],
+  //   ["rook-white", "knight-white", "bishop-white", "queen-white", "king-white", "bishop-white", "knight-white", "rook-white"]
+  // ],
   chessBoard: [
-    ["rook-black", "knight-black", "bishop-black", "queen-black", "king-black", "bishop-black", "knight-black", "rook-black"],
-    ["pawn-black", "pawn-black", "pawn-black", "pawn-black", "pawn-black", "pawn-black", "pawn-black", "pawn-black"],
+    [null, null, null, null, null,  "king-black", null, null],
     [null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
+    [null, "queen-black", null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
-    ["pawn-white", "pawn-white", "pawn-white", "pawn-white", "pawn-white", "pawn-white", "pawn-white", "pawn-white"],
-    ["rook-white", "knight-white", "bishop-white", "queen-white", "king-white", "bishop-white", "knight-white", "rook-white"]
+    [null, null, "queen-white", null, null, null, null, null],
+    [null, null, null, null, "rook-white", null, "king-white", null]
   ],
+
   moveColor: "white",
   setChessBoard: (board) => set({ chessBoard: board }),
   setMoveColor: (color) => set({ moveColor: color }),

@@ -1,6 +1,6 @@
 import PieceStrategy from "./PieceStrategy";
 import {
-  convertCooordinatesStringToArray as stringToArray,
+  convertCoordinatesStringToArray as stringToArray,
   convertPieceStringToObject as pieceStringToObj,
 } from "../Convertors";
 

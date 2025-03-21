@@ -1,4 +1,4 @@
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import { DndContext, DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import Square from "./Square";
 import PawnChangeDialog from "@/components/chess/ui/PawnChangeDialog.tsx";
@@ -6,7 +6,7 @@ import { BoardCoordinates } from "@/types/BoardCoordinates.ts";
 import {
   convertCooordinatesStringToObject as stringToObj,
   convertPieceStringToObject as pieceToObj,
-  convertCooordinatesStringToArray as coordinatesToArray,
+  convertCoordinatesStringToArray as coordinatesToArray,
 } from "../../../utils/Convertors";
 import { selectStrategy } from "@/utils/strategies/StrategySelector.ts";
 import { Strategy } from "@/types/Strategy.ts";
@@ -46,6 +46,11 @@ export default function Board({
 
   const [isDialogOpen, setDialogOpen] = useState(false);
   const resolvePromotionRef = useRef<((value: string) => void) | null>(null);
+
+  useEffect(() => {
+    const controlledSquares = moveColor === "white" ? blackControlled : whiteControlled;
+    isCheckmate(controlledSquares) ? alert("Checkmate!") : undefined;
+  }, [moveColor]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
@@ -196,9 +201,141 @@ export default function Board({
     return check;
   };
 
-  // const isCheckMate = () => {
-  //
-  // }
+  const isCheckmate = (
+      controlledBoard: boolean[][],
+  ): boolean => {
+    if (!isCheck(chessBoard, controlledBoard)) return false;
+
+    let kingPosition: [number, number] | null = null;
+
+    chessBoard.forEach((row, rowIndex) =>
+        row.forEach((squareString, colIndex) => {
+          if (squareString === `king-${moveColor}`) {
+            kingPosition = [rowIndex, colIndex];
+          }
+        })
+    );
+
+    if (!kingPosition) return false;
+
+    const [kingRow, kingCol] = kingPosition as [number, number];
+
+    const strategy = selectStrategy("king");
+    const kingMoves = strategy.getValidMoves(`${kingRow}-${kingCol}`, chessBoard);
+
+    for (const [dx, dy] of kingMoves) {
+      if(!controlledBoard[dx][dy]) {
+        return false;
+      }
+    }
+
+    const opponentColor = moveColor === "white" ? "black" : "white";
+
+    const attackingPieces: [number, number][] = getAttackingPieces(kingPosition, opponentColor);
+
+    if (attackingPieces.length === 1) {
+      const [attackerRow, attackerCol] = attackingPieces[0];
+
+      if (canPieceBeCaptured(attackerRow, attackerCol)) {
+        return false;
+      }
+
+      if (canAttackBeBlocked(kingPosition, [attackerRow, attackerCol])) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const getAttackingPieces = (kingPosition: [number, number], opponentColor: string): [number, number][] => {
+    const attackingPiecePositions: [number, number][] = [];
+
+    for (let rowIndex = 0; rowIndex < chessBoard.length; rowIndex++) {
+      for (let colIndex = 0; colIndex < chessBoard[rowIndex].length; colIndex++) {
+        const squareString = chessBoard[rowIndex][colIndex];
+
+        if (squareString?.includes(opponentColor)) {
+          const {name} = pieceToObj(squareString);
+          const strategy = selectStrategy(name);
+          const attackedPositions = strategy.getValidMoves(`${rowIndex}-${colIndex}`, chessBoard);
+
+          if (attackedPositions.some(([row, col]) => row === kingPosition[0] && col === kingPosition[1])) {
+            attackingPiecePositions.push([rowIndex, colIndex]);
+          }
+        }
+      }
+    }
+
+    return attackingPiecePositions;
+  };
+
+  const canPieceBeCaptured = (attackerRow: number, attackerCol: number): boolean => {
+    const controlledSquares = moveColor === "white" ? whiteControlled : blackControlled;
+
+    return controlledSquares[attackerRow]?.[attackerCol] ?? false;
+  };
+
+  const canAttackBeBlocked = (
+      kingPosition: [number, number],
+      attackerPosition: [number, number],
+  ): boolean => {
+    const [attackerRow, attackerCol] = attackerPosition;
+
+    const attackerPiece = chessBoard[attackerRow][attackerCol];
+    if (!attackerPiece) return false;
+
+    const {name} = pieceToObj(attackerPiece);
+
+    let blockingSquares: [number, number][] = [];
+
+    if (["queen", "rook", "bishop"].includes(name)) {
+      blockingSquares = getPathBetween(kingPosition, attackerPosition);
+    }
+
+    if (blockingSquares.length === 0) return false;
+
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        const piece = chessBoard[row][col]
+
+        if (piece && piece.includes(moveColor) && !piece.includes("king")) {
+          const {name} = pieceToObj(piece);
+          const strategy = selectStrategy(name);
+          const validMoves = strategy.getValidMoves(`${row}-${col}`, chessBoard);
+
+          if (validMoves.some(([moveRow, moveCol]) =>
+              blockingSquares.some(([blockRow, blockCol]) => blockRow === moveRow && blockCol === moveCol)
+          )) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  };
+
+  const getPathBetween = (start: [number, number], end: [number, number]): [number, number][] => {
+    const [startRow, startCol] = start;
+    const [endRow, endCol] = end;
+    const path: [number, number][] = [];
+
+    const rowStep = startRow < endRow ? 1 : startRow > endRow ? -1 : 0;
+    const colStep = startCol < endCol ? 1 : startCol > endCol ? -1 : 0;
+
+    let row = startRow + rowStep;
+    let col = startCol + colStep;
+
+    while (row !== endRow || col !== endCol) {
+      path.push([row, col]);
+      row += rowStep;
+      col += colStep;
+    }
+
+    return path;
+  };
+
 
   const getUpdatedControlledSquares = (board: (string | null)[][]) => {
     const controlledSquares:
