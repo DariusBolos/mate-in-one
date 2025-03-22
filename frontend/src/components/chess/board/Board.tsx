@@ -13,20 +13,23 @@ import { Strategy } from "@/types/Strategy.ts";
 import {
   useChessStore,
   useControlledStore,
-} from "@/hooks/chessBoardHooks.ts";
+} from "@/hooks/ChessBoardHooks.ts";
 import { Move } from "@/types/Move.ts";
 import { PieceColor } from "@/types/Piece.ts";
 import { MouseEvent } from "react";
+import {toast} from "sonner";
+import {Result} from "@/types/Result.ts";
 
 type Props = {
   handleNewMoveRegistration: (newMove: Move) => void;
   handleTurnChange: (player: string, color: PieceColor) => void;
+  handleGameEnd: (result: Result) => void;
   previousMoves: Move[];
 };
 
 export default function Board({
   handleNewMoveRegistration,
-  handleTurnChange,
+  handleTurnChange, handleGameEnd,
   previousMoves,
 }: Props) {
   const boardLetters = "ABCDEFGH";
@@ -48,8 +51,23 @@ export default function Board({
   const resolvePromotionRef = useRef<((value: string) => void) | null>(null);
 
   useEffect(() => {
+    const opponentColor = moveColor === "white" ? "Black" : "White";
     const controlledSquares = moveColor === "white" ? blackControlled : whiteControlled;
-    isCheckmate(controlledSquares) ? alert("Checkmate!") : undefined;
+
+    if(isCheckmate(controlledSquares)) {
+      toast.info(`Checkmate. ${opponentColor} wins.`);
+
+      const result: Result = {
+        winner: opponentColor,
+        loser: moveColor.charAt(0).toUpperCase() + moveColor.slice(1),
+        way: "Checkmate"
+      }
+
+      setTimeout(() => {
+        handleGameEnd(result);
+      }, 1000)
+
+    }
   }, [moveColor]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -167,7 +185,7 @@ export default function Board({
     }
 
     if (isCheckOnKing) {
-      alert("CHECK!!");
+      toast.info(`Cannot move there. ${moveColor.charAt(0).toUpperCase() + moveColor.slice(1)} King is in Check.`);
       return;
     }
 

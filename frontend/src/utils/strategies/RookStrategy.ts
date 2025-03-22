@@ -34,6 +34,13 @@ export default class RookStrategy extends PieceStrategy {
             moves.push([newX, newY]);
           }
 
+          if(board[newX][newY]?.includes("king")) {
+            moves.push([newX, newY]);
+            newX += dx;
+            newY += dy;
+            continue;
+          }
+
           break;
         }
 
