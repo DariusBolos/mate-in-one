@@ -19,6 +19,9 @@ import { PieceColor } from "@/types/Piece.ts";
 import { MouseEvent } from "react";
 import {toast} from "sonner";
 import {Result} from "@/types/Result.ts";
+import io from "socket.io-client";
+
+const socket = io("http://localhost:3000");
 
 type Props = {
   handleNewMoveRegistration: (newMove: Move) => void;
@@ -66,9 +69,22 @@ export default function Board({
       setTimeout(() => {
         handleGameEnd(result);
       }, 1000)
-
     }
+
+    socket.emit("send_game_state", {
+      board: chessBoard,
+      color: moveColor
+    });
   }, [moveColor]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    socket.on("receive_game_state", (data) => {
+      const {board, color} = data;
+
+      setChessBoard(board);
+      setMoveColor(color);
+    })
+  }, [socket]);
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
