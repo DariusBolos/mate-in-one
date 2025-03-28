@@ -67,7 +67,7 @@ cd mate-in-one
 
 ### **2️⃣ Install Dependencies**  
 ```bash  
-npm install  
+cd frontend && npm install && cd ../backend && npm install
 ```
 
 ### **3️⃣ Set Up Environment Variables**  
