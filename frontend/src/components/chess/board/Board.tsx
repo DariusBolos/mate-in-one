@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState } from "react";
 import { DndContext, DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import Square from "./Square";
 import PawnChangeDialog from "@/components/chess/ui/PawnChangeDialog.tsx";
@@ -10,18 +10,13 @@ import {
 } from "../../../utils/Convertors";
 import { selectStrategy } from "@/utils/strategies/StrategySelector.ts";
 import { Strategy } from "@/types/Strategy.ts";
-import {
-  useChessStore,
-  useControlledStore,
-} from "@/hooks/ChessBoardHooks.ts";
+import { useChessStore, useControlledStore } from "@/hooks/ChessBoardHooks.ts";
 import { Move } from "@/types/Move.ts";
 import { PieceColor } from "@/types/Piece.ts";
 import { MouseEvent } from "react";
-import {toast} from "sonner";
-import {Result} from "@/types/Result.ts";
-import io from "socket.io-client";
-
-const socket = io("http://localhost:3000");
+import { toast } from "sonner";
+import { Result } from "@/types/Result.ts";
+import { socket } from "@/configs/Client";
 
 type Props = {
   handleNewMoveRegistration: (newMove: Move) => void;
@@ -32,7 +27,8 @@ type Props = {
 
 export default function Board({
   handleNewMoveRegistration,
-  handleTurnChange, handleGameEnd,
+  handleTurnChange,
+  handleGameEnd,
   previousMoves,
 }: Props) {
   const boardLetters = "ABCDEFGH";
@@ -43,6 +39,7 @@ export default function Board({
   const [moveStrategy, setMoveStrategy] = useState<Strategy | null>(null);
   const [initialPosition, setInitialPosition] = useState<number[]>([]);
   const [validMoves, setValidMoves] = useState<number[][]>([]);
+
   const {
     whiteControlled,
     blackControlled,
@@ -55,42 +52,45 @@ export default function Board({
 
   useEffect(() => {
     const opponentColor = moveColor === "white" ? "Black" : "White";
-    const controlledSquares = moveColor === "white" ? blackControlled : whiteControlled;
+    const controlledSquares =
+      moveColor === "white" ? blackControlled : whiteControlled;
 
-    if(isCheckmate(controlledSquares)) {
-      toast.info(`Checkmate. ${opponentColor} wins.`);
+    if (isCheckmate(controlledSquares)) {
+      console.log(controlledSquares);
 
       const result: Result = {
         winner: opponentColor,
         loser: moveColor.charAt(0).toUpperCase() + moveColor.slice(1),
-        way: "Checkmate"
-      }
+        way: "Checkmate",
+      };
 
-      setTimeout(() => {
-        handleGameEnd(result);
-      }, 1000)
+      socket.emit("send_result", {
+        result: result,
+      });
     }
 
     socket.emit("send_game_state", {
       board: chessBoard,
-      color: moveColor
+      color: moveColor,
+      moves: previousMoves,
     });
-  }, [moveColor]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [moveColor]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    socket.on("receive_game_state", (data) => {
-      const {board, color} = data;
+    socket.on("receive_result", (data) => {
+      toast.info(`Checkmate. ${data.result.winner} wins.`);
 
-      setChessBoard(board);
-      setMoveColor(color);
-    })
+      setTimeout(() => {
+        handleGameEnd(data.result);
+      }, 1000);
+    });
   }, [socket]);
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
 
     const { rowIndex, colIndex }: BoardCoordinates = stringToObj(
-      String(active.id),
+      String(active.id)
     );
 
     if (!chessBoard[rowIndex][colIndex]?.includes(moveColor)) {
@@ -102,7 +102,7 @@ export default function Board({
     setMoveStrategy(intermediaryStrategy);
 
     setValidMoves(
-      intermediaryStrategy.getValidMoves(String(active.id), chessBoard),
+      intermediaryStrategy.getValidMoves(String(active.id), chessBoard)
     );
 
     if (pieceObj.name === "king") {
@@ -139,7 +139,7 @@ export default function Board({
     x1: number,
     y1: number,
     x2: number,
-    y2: number,
+    y2: number
   ) => {
     const newBoard = chessBoard.map((row) => [...row]);
 
@@ -170,19 +170,28 @@ export default function Board({
       }
     } else {
       // en passant logic
-      if (newBoard[x2][y2]?.includes("pawn") && newBoard[x2][y2 + 1]?.includes("pawn") && y1 != y2) {
-        !newBoard[x2][y2 + 1]?.includes(moveColor) && (newBoard[x2][y2 + 1] = null);
+      if (
+        newBoard[x2][y2]?.includes("pawn") &&
+        newBoard[x2][y2 + 1]?.includes("pawn") &&
+        y1 != y2
+      ) {
+        !newBoard[x2][y2 + 1]?.includes(moveColor) &&
+          (newBoard[x2][y2 + 1] = null);
       }
 
-      if (newBoard[x2][y2]?.includes("pawn") && newBoard[x2][y2 - 1]?.includes("pawn") && y1 != y2) {
-        !newBoard[x2][y2 - 1]?.includes(moveColor) && (newBoard[x2][y2 - 1] = null);
+      if (
+        newBoard[x2][y2]?.includes("pawn") &&
+        newBoard[x2][y2 - 1]?.includes("pawn") &&
+        y1 != y2
+      ) {
+        !newBoard[x2][y2 - 1]?.includes(moveColor) &&
+          (newBoard[x2][y2 - 1] = null);
       }
 
-      if(newBoard[x2][y2]?.includes("pawn") && (x1 === 0 || x1 === 7)) {
-        await handlePawnPromotion()
-             .then((newPiece) => {
-               newBoard[x2][y2] = newPiece;
-             })
+      if (newBoard[x2][y2]?.includes("pawn") && (x1 === 0 || x1 === 7)) {
+        await handlePawnPromotion().then((newPiece) => {
+          newBoard[x2][y2] = newPiece;
+        });
       }
 
       newBoard[x1][y1] = newBoard[x2][y2];
@@ -201,7 +210,9 @@ export default function Board({
     }
 
     if (isCheckOnKing) {
-      toast.info(`Cannot move there. ${moveColor.charAt(0).toUpperCase() + moveColor.slice(1)} King is in Check.`);
+      toast.info(
+        `Cannot move there. ${moveColor.charAt(0).toUpperCase() + moveColor.slice(1)} King is in Check.`
+      );
       return;
     }
 
@@ -220,7 +231,7 @@ export default function Board({
 
   const isCheck = (
     chessBoard: (string | null)[][],
-    controlledBoard: boolean[][],
+    controlledBoard: boolean[][]
   ) => {
     let check = false;
 
@@ -229,25 +240,21 @@ export default function Board({
         if (squareString === `king-${moveColor}`) {
           if (controlledBoard[rowIndex][colIndex]) check = true;
         }
-      }),
+      })
     );
 
     return check;
   };
 
-  const isCheckmate = (
-      controlledBoard: boolean[][],
-  ): boolean => {
-    if (!isCheck(chessBoard, controlledBoard)) return false;
-
+  const isCheckmate = (controlledBoard: boolean[][]): boolean => {
     let kingPosition: [number, number] | null = null;
 
     chessBoard.forEach((row, rowIndex) =>
-        row.forEach((squareString, colIndex) => {
-          if (squareString === `king-${moveColor}`) {
-            kingPosition = [rowIndex, colIndex];
-          }
-        })
+      row.forEach((squareString, colIndex) => {
+        if (squareString === `king-${moveColor}`) {
+          kingPosition = [rowIndex, colIndex];
+        }
+      })
     );
 
     if (!kingPosition) return false;
@@ -255,17 +262,25 @@ export default function Board({
     const [kingRow, kingCol] = kingPosition as [number, number];
 
     const strategy = selectStrategy("king");
-    const kingMoves = strategy.getValidMoves(`${kingRow}-${kingCol}`, chessBoard);
+    const kingMoves = strategy.getValidMoves(
+      `${kingRow}-${kingCol}`,
+      chessBoard
+    );
+
+    if (kingMoves.length === 0) return false;
 
     for (const [dx, dy] of kingMoves) {
-      if(!controlledBoard[dx][dy]) {
+      if (!controlledBoard[dx][dy]) {
         return false;
       }
     }
 
     const opponentColor = moveColor === "white" ? "black" : "white";
 
-    const attackingPieces: [number, number][] = getAttackingPieces(kingPosition, opponentColor);
+    const attackingPieces: [number, number][] = getAttackingPieces(
+      kingPosition,
+      opponentColor
+    );
 
     if (attackingPieces.length === 1) {
       const [attackerRow, attackerCol] = attackingPieces[0];
@@ -282,19 +297,33 @@ export default function Board({
     return true;
   };
 
-  const getAttackingPieces = (kingPosition: [number, number], opponentColor: string): [number, number][] => {
+  const getAttackingPieces = (
+    kingPosition: [number, number],
+    opponentColor: string
+  ): [number, number][] => {
     const attackingPiecePositions: [number, number][] = [];
 
     for (let rowIndex = 0; rowIndex < chessBoard.length; rowIndex++) {
-      for (let colIndex = 0; colIndex < chessBoard[rowIndex].length; colIndex++) {
+      for (
+        let colIndex = 0;
+        colIndex < chessBoard[rowIndex].length;
+        colIndex++
+      ) {
         const squareString = chessBoard[rowIndex][colIndex];
 
         if (squareString?.includes(opponentColor)) {
-          const {name} = pieceToObj(squareString);
+          const { name } = pieceToObj(squareString);
           const strategy = selectStrategy(name);
-          const attackedPositions = strategy.getValidMoves(`${rowIndex}-${colIndex}`, chessBoard);
+          const attackedPositions = strategy.getValidMoves(
+            `${rowIndex}-${colIndex}`,
+            chessBoard
+          );
 
-          if (attackedPositions.some(([row, col]) => row === kingPosition[0] && col === kingPosition[1])) {
+          if (
+            attackedPositions.some(
+              ([row, col]) => row === kingPosition[0] && col === kingPosition[1]
+            )
+          ) {
             attackingPiecePositions.push([rowIndex, colIndex]);
           }
         }
@@ -304,22 +333,26 @@ export default function Board({
     return attackingPiecePositions;
   };
 
-  const canPieceBeCaptured = (attackerRow: number, attackerCol: number): boolean => {
-    const controlledSquares = moveColor === "white" ? whiteControlled : blackControlled;
+  const canPieceBeCaptured = (
+    attackerRow: number,
+    attackerCol: number
+  ): boolean => {
+    const controlledSquares =
+      moveColor === "white" ? whiteControlled : blackControlled;
 
     return controlledSquares[attackerRow]?.[attackerCol] ?? false;
   };
 
   const canAttackBeBlocked = (
-      kingPosition: [number, number],
-      attackerPosition: [number, number],
+    kingPosition: [number, number],
+    attackerPosition: [number, number]
   ): boolean => {
     const [attackerRow, attackerCol] = attackerPosition;
 
     const attackerPiece = chessBoard[attackerRow][attackerCol];
     if (!attackerPiece) return false;
 
-    const {name} = pieceToObj(attackerPiece);
+    const { name } = pieceToObj(attackerPiece);
 
     let blockingSquares: [number, number][] = [];
 
@@ -331,16 +364,24 @@ export default function Board({
 
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
-        const piece = chessBoard[row][col]
+        const piece = chessBoard[row][col];
 
         if (piece && piece.includes(moveColor) && !piece.includes("king")) {
-          const {name} = pieceToObj(piece);
+          const { name } = pieceToObj(piece);
           const strategy = selectStrategy(name);
-          const validMoves = strategy.getValidMoves(`${row}-${col}`, chessBoard);
+          const validMoves = strategy.getValidMoves(
+            `${row}-${col}`,
+            chessBoard
+          );
 
-          if (validMoves.some(([moveRow, moveCol]) =>
-              blockingSquares.some(([blockRow, blockCol]) => blockRow === moveRow && blockCol === moveCol)
-          )) {
+          if (
+            validMoves.some(([moveRow, moveCol]) =>
+              blockingSquares.some(
+                ([blockRow, blockCol]) =>
+                  blockRow === moveRow && blockCol === moveCol
+              )
+            )
+          ) {
             return true;
           }
         }
@@ -350,7 +391,10 @@ export default function Board({
     return false;
   };
 
-  const getPathBetween = (start: [number, number], end: [number, number]): [number, number][] => {
+  const getPathBetween = (
+    start: [number, number],
+    end: [number, number]
+  ): [number, number][] => {
     const [startRow, startCol] = start;
     const [endRow, endCol] = end;
     const path: [number, number][] = [];
@@ -370,7 +414,6 @@ export default function Board({
     return path;
   };
 
-
   const getUpdatedControlledSquares = (board: (string | null)[][]) => {
     const controlledSquares:
       | {
@@ -380,10 +423,10 @@ export default function Board({
       | undefined = moveStrategy?.getControlledPositions(board);
 
     const newWhiteControlled = whiteControlled.map((row) =>
-      row.map(() => false),
+      row.map(() => false)
     );
     const newBlackControlled = blackControlled.map((row) =>
-      row.map(() => false),
+      row.map(() => false)
     );
 
     controlledSquares?.whiteControlled.forEach(([row, col]) => {
@@ -401,16 +444,20 @@ export default function Board({
     let shortCastle = true;
     let longCastle = true;
 
-    if(chessBoard[row][col + 1] || chessBoard[row][col + 2]) {
+    if (chessBoard[row][col + 1] || chessBoard[row][col + 2]) {
       shortCastle = false;
     }
 
-    if(chessBoard[row][col - 1] || chessBoard[row][col - 2] || chessBoard[row][col - 3]){
+    if (
+      chessBoard[row][col - 1] ||
+      chessBoard[row][col - 2] ||
+      chessBoard[row][col - 3]
+    ) {
       longCastle = false;
     }
 
-    if(!shortCastle && !longCastle) {
-      return ;
+    if (!shortCastle && !longCastle) {
+      return;
     }
 
     previousMoves.forEach((move) => {
@@ -437,8 +484,10 @@ export default function Board({
       }
     });
 
-    shortCastle = shortCastle && !isSquareAttacked(row, 5) && !isSquareAttacked(row, 6);
-    longCastle = longCastle && !isSquareAttacked(row, 2) && !isSquareAttacked(row, 3);
+    shortCastle =
+      shortCastle && !isSquareAttacked(row, 5) && !isSquareAttacked(row, 6);
+    longCastle =
+      longCastle && !isSquareAttacked(row, 2) && !isSquareAttacked(row, 3);
 
     shortCastle && setValidMoves((prev) => [...prev, [row, col + 2]]);
     longCastle && setValidMoves((prev) => [...prev, [row, col - 2]]);
@@ -451,19 +500,26 @@ export default function Board({
     const { startPosition, endPosition, movedPiece } = lastMove;
 
     const isPawnMove = movedPiece.includes("pawn");
-    const movedTwoSquares = Math.abs(startPosition.rowIndex - endPosition.rowIndex) === 2;
-    const correctStartRow = movedPiece.includes("white") ? startPosition.rowIndex === 6 : startPosition.rowIndex === 1;
+    const movedTwoSquares =
+      Math.abs(startPosition.rowIndex - endPosition.rowIndex) === 2;
+    const correctStartRow = movedPiece.includes("white")
+      ? startPosition.rowIndex === 6
+      : startPosition.rowIndex === 1;
 
     if (!isPawnMove || !movedTwoSquares || !correctStartRow) return;
 
     if (moveColor === "white" && row === 3 && endPosition.rowIndex === 3) {
-      if (endPosition.colIndex === col + 1) setValidMoves((prev) => [...prev, [row - 1, col + 1]]);
-      if (endPosition.colIndex === col - 1) setValidMoves((prev) => [...prev, [row - 1, col - 1]]);
+      if (endPosition.colIndex === col + 1)
+        setValidMoves((prev) => [...prev, [row - 1, col + 1]]);
+      if (endPosition.colIndex === col - 1)
+        setValidMoves((prev) => [...prev, [row - 1, col - 1]]);
     }
 
     if (moveColor === "black" && row === 4 && endPosition.rowIndex === 4) {
-      if (endPosition.colIndex === col + 1) setValidMoves((prev) => [...prev, [row + 1, col + 1]]);
-      if (endPosition.colIndex === col - 1) setValidMoves((prev) => [...prev, [row + 1, col - 1]]);
+      if (endPosition.colIndex === col + 1)
+        setValidMoves((prev) => [...prev, [row + 1, col + 1]]);
+      if (endPosition.colIndex === col - 1)
+        setValidMoves((prev) => [...prev, [row + 1, col - 1]]);
     }
   };
 
@@ -474,7 +530,6 @@ export default function Board({
 
     return controlledSquares[row][col];
   };
-
 
   const getPawnPromotionPiece = (e: MouseEvent<HTMLDivElement>) => {
     if (resolvePromotionRef.current) {
@@ -500,7 +555,6 @@ export default function Board({
     return newPiece;
   };
 
-
   return (
     <div className="relative">
       <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
@@ -508,7 +562,7 @@ export default function Board({
           {chessBoard.map((row, rowIndex) =>
             row.map((pieceCode, colIndex) => {
               const isValid = validMoves?.some(
-                ([row, col]) => row === rowIndex && col === colIndex,
+                ([row, col]) => row === rowIndex && col === colIndex
               );
 
               return (
@@ -520,7 +574,7 @@ export default function Board({
                   isValidPosition={isValid}
                 />
               );
-            }),
+            })
           )}
         </div>
       </DndContext>
@@ -544,7 +598,11 @@ export default function Board({
         ))}
       </div>
 
-      <PawnChangeDialog isOpen={isDialogOpen} chooseNewPiece={getPawnPromotionPiece} color={moveColor}/>
+      <PawnChangeDialog
+        isOpen={isDialogOpen}
+        chooseNewPiece={getPawnPromotionPiece}
+        color={moveColor}
+      />
     </div>
   );
 }

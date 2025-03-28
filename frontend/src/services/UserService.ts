@@ -1,27 +1,33 @@
-import axios from 'axios';
-import { User } from '../types/User';
+import axios from "axios";
+import { User } from "../types/User";
+import { toast } from "sonner";
 
 const userUrl = "http://localhost:3000/user";
 
-async function saveUser(user: User){
-    await axios.post(userUrl, user)
-    .then(response => {
-        console.log(response);
-        window.location.href = "http://localhost:5173/login";
+async function saveUser(user: User) {
+  await axios
+    .post(userUrl, user)
+    .then((response) => {
+      toast.success(response.data);
+      setTimeout(
+        () => window.location.replace("http://localhost:5173/login"),
+        1500
+      );
     })
-    .catch(error => console.log(error));
+    .catch((error) => toast.error(error.response.data));
 }
 
-async function getUser(email: string, password: string){
-    await axios.get(userUrl, { params: {email, password} })
-    .then(response => {
-        console.log(response);
-        window.location.href = "http://localhost:5173/dashboard";
+async function getUser(email: string, password: string) {
+  await axios
+    .get(userUrl, { params: { email, password } })
+    .then((response) => {
+      toast.success(response.data);
+      setTimeout(
+        () => window.location.replace("http://localhost:5173/dashboard"),
+        1500
+      );
     })
-    .catch(error => {
-        console.log(error);
-        alert("Invalid credentials");
-    });
+    .catch((error) => toast.error(error.response.data));
 }
 
 export { saveUser, getUser };
