@@ -158,7 +158,6 @@ export default function Board({
         newBoard[x2][y2 + 1] = newBoard[x2][7];
         newBoard[x2][7] = null;
         newBoard[x2][y2] = null;
-        // ongoingMove = {...ongoingMove, endPosition: {rowIndex: x1, colIndex: y1 + 1}}
       } else if (y1 === y2 - 2) {
         newBoard[x2][y2 - 2] = newBoard[x2][y2];
         newBoard[x2][y2 - 1] = newBoard[x2][0];
@@ -246,8 +245,13 @@ export default function Board({
     return check;
   };
 
+  // the checkmate bug needs to be fixed in the move strategies
   const isCheckmate = (controlledBoard: boolean[][]): boolean => {
     let kingPosition: [number, number] | null = null;
+
+    if (!isCheck(chessBoard, controlledBoard)) return false;
+
+    console.log(controlledBoard);
 
     chessBoard.forEach((row, rowIndex) =>
       row.forEach((squareString, colIndex) => {
@@ -579,7 +583,7 @@ export default function Board({
         </div>
       </DndContext>
 
-      <div className="absolute left-0 top-0 flex flex-col justify-center gap-15 h-full ml-4">
+      <div className="absolute left-0 top-0 flex flex-col justify-center gap-13 h-full ml-4">
         {boardNumbers.split("").map((number, index) => (
           <span key={index} className="text-white text-sm font-bold">
             {number}
@@ -587,7 +591,7 @@ export default function Board({
         ))}
       </div>
 
-      <div className="absolute bottom-0 left-0 w-full flex justify-center gap-5 mb-2">
+      <div className="absolute bottom-0 left-0 w-full flex justify-center gap-3 mb-2">
         {boardLetters.split("").map((letter, index) => (
           <span
             key={index}
