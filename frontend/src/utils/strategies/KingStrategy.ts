@@ -9,16 +9,16 @@ export default class KingStrategy extends PieceStrategy {
     super("king");
   }
 
-  protected isValidMove(
-    x: number,
-    y: number,
-    board: (string | null)[][],
-    color: string
-  ) {
-    return (
-      !board[x][y]?.includes("king") && super.isValidMove(x, y, board, color)
-    );
-  }
+  // protected isValidMove(
+  //   x: number,
+  //   y: number,
+  //   board: (string | null)[][],
+  //   color: string
+  // ) {
+  //   return (
+  //     !board[x][y]?.includes("king") && super.isValidMove(x, y, board, color)
+  //   );
+  // }
 
   public getValidMoves(position: string, board: (string | null)[][]) {
     const [x, y] = stringToArray(position);

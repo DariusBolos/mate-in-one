@@ -19,7 +19,8 @@ export default abstract class PieceStrategy {
 
   public getValidMoves(
     _position: string,
-    _board: (string | null)[][]
+    _board: (string | null)[][],
+    _controlling: boolean = false
   ): number[][] {
     return [];
   }
@@ -74,14 +75,14 @@ export default abstract class PieceStrategy {
           if (piece.color === "white") {
             whiteControlled = [
               ...whiteControlled,
-              ...strategy.getValidMoves(`${rowIndex}-${colIndex}`, board),
+              ...strategy.getValidMoves(`${rowIndex}-${colIndex}`, board, true),
             ];
           }
 
           if (piece.color === "black") {
             blackControlled = [
               ...blackControlled,
-              ...strategy.getValidMoves(`${rowIndex}-${colIndex}`, board),
+              ...strategy.getValidMoves(`${rowIndex}-${colIndex}`, board, true),
             ];
           }
         }

@@ -9,7 +9,15 @@ export default class KnightStrategy extends PieceStrategy {
     super("knight");
   }
 
-  public getValidMoves(position: string, board: (string | null)[][]) {
+  protected isValidMove(x: number, y: number): boolean {
+    return x >= 0 && x < 8 && y >= 0 && y < 8;
+  }
+
+  public getValidMoves(
+    position: string,
+    board: (string | null)[][],
+    controlling: boolean = false
+  ) {
     const [x, y] = stringToArray(position);
     const { color } = pieceStringToObj(board[x][y]!);
 
@@ -24,8 +32,11 @@ export default class KnightStrategy extends PieceStrategy {
       [x - 1, y - 2],
     ];
 
+    if (controlling)
+      return moves.filter(([newX, newY]) => this.isValidMove(newX, newY));
+
     return moves.filter(([newX, newY]) =>
-      this.isValidMove(newX, newY, board, color)
+      super.isValidMove(newX, newY, board, color)
     );
   }
 }
