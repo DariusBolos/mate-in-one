@@ -2,9 +2,7 @@ import { useEffect, useState } from "react";
 import Board from "../../components/chess/board/Board";
 import MoveTracker from "../../components/chess/ui/MoveTracker";
 import PlayerBanner from "../../components/chess/ui/PlayerBanner";
-import TurnBanner from "../../components/chess/ui/TurnBanner";
 import { Move } from "@/types/Move.ts";
-import DefaultButton from "../../components/shared/button/DefaultButton";
 import { useChessStore } from "@/hooks/ChessBoardHooks.ts";
 import { Turn } from "@/types/Turn.ts";
 import { PieceColor } from "@/types/Piece.ts";
@@ -12,6 +10,8 @@ import { useGame } from "@/hooks/GameHooks.ts";
 import { ResultDialog } from "@/components/chess/ui/ResultDialog.tsx";
 import { Result } from "@/types/Result.ts";
 import { socket } from "@/configs/Client";
+import { Button } from "@/components/ui/button";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 
 export default function GamePage() {
   const { chessBoard, setChessBoard, moveColor, setMoveColor } =
@@ -96,14 +96,24 @@ export default function GamePage() {
         <PlayerBanner username="Player 1" avatar="" />
       </div>
       <div className="flex flex-col justify-center gap-20 items-center h-dvh ml-30">
-        <TurnBanner player={turn.player} color={turn.color} />
         <div className="flex flex-col gap-10">
           <MoveTracker moves={moves} />
-          <div className="flex flex-row justify-evenly">
-            <DefaultButton
-              text={"Revert Last Move"}
-              clickFunction={revertMove}
-            />
+          <div className="flex flex-row justify-start gap-5">
+            <Button
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg transition duration-300 hover:bg-blue-600 hover:scale-105 cursor-pointer"
+              variant="outline"
+              size="lg"
+              onClick={revertMove}
+            >
+              <ChevronLeftIcon />
+            </Button>
+            <Button
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg transition duration-300 hover:bg-blue-600 hover:scale-105 cursor-pointer"
+              variant="outline"
+              size="lg"
+            >
+              <ChevronRightIcon />
+            </Button>
           </div>
         </div>
       </div>

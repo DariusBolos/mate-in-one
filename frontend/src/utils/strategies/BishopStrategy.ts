@@ -34,12 +34,7 @@ export default class BishopStrategy extends PieceStrategy {
             moves.push([newX, newY]);
           }
 
-          if(board[newX][newY]?.includes("king")) {
-            moves.push([newX, newY]);
-            newX += dx;
-            newY += dy;
-            continue;
-          }
+          moves.push([newX, newY]);
 
           break;
         }

@@ -12,21 +12,21 @@ export default abstract class PieceStrategy {
     x: number,
     y: number,
     board: (string | null)[][],
-    color: string,
+    color: string
   ) {
     return x >= 0 && x < 8 && y >= 0 && y < 8 && !board[x][y]?.includes(color);
   }
 
   public getValidMoves(
     _position: string,
-    _board: (string | null)[][],
+    _board: (string | null)[][]
   ): number[][] {
     return [];
   }
 
   public getCapturingPositions(
     _position: string,
-    _board: (string | null)[][],
+    _board: (string | null)[][]
   ): number[][] {
     return [];
   }
@@ -45,12 +45,14 @@ export default abstract class PieceStrategy {
           const piece = stringToObj(square);
           const strategy = selectStrategy(piece.name);
 
+          if (piece.name === "king") return;
+
           if (square === "pawn-white") {
             whiteControlled = [
               ...whiteControlled,
               ...strategy.getCapturingPositions(
                 `${rowIndex}-${colIndex}`,
-                board,
+                board
               ),
             ];
 
@@ -62,7 +64,7 @@ export default abstract class PieceStrategy {
               ...blackControlled,
               ...strategy.getCapturingPositions(
                 `${rowIndex}-${colIndex}`,
-                board,
+                board
               ),
             ];
 

@@ -17,6 +17,7 @@ import { MouseEvent } from "react";
 import { toast } from "sonner";
 import { Result } from "@/types/Result.ts";
 import { socket } from "@/configs/Client";
+import { log } from "console";
 
 type Props = {
   handleNewMoveRegistration: (newMove: Move) => void;
@@ -55,9 +56,9 @@ export default function Board({
     const controlledSquares =
       moveColor === "white" ? blackControlled : whiteControlled;
 
-    if (isCheckmate(controlledSquares)) {
-      console.log(controlledSquares);
+    console.log(controlledSquares);
 
+    if (isCheckmate(controlledSquares)) {
       const result: Result = {
         winner: opponentColor,
         loser: moveColor.charAt(0).toUpperCase() + moveColor.slice(1),
@@ -150,7 +151,6 @@ export default function Board({
       capturedPiece: newBoard[x1][y1],
     };
 
-    // to be refactored, works for now
     // castling logic
     if (newBoard[x2][y2]?.includes("king")) {
       if (y1 === y2 + 2) {
@@ -245,13 +245,10 @@ export default function Board({
     return check;
   };
 
-  // the checkmate bug needs to be fixed in the move strategies
   const isCheckmate = (controlledBoard: boolean[][]): boolean => {
     let kingPosition: [number, number] | null = null;
 
     if (!isCheck(chessBoard, controlledBoard)) return false;
-
-    console.log(controlledBoard);
 
     chessBoard.forEach((row, rowIndex) =>
       row.forEach((squareString, colIndex) => {
@@ -343,6 +340,8 @@ export default function Board({
   ): boolean => {
     const controlledSquares =
       moveColor === "white" ? whiteControlled : blackControlled;
+
+    console.log(controlledSquares);
 
     return controlledSquares[attackerRow]?.[attackerCol] ?? false;
   };

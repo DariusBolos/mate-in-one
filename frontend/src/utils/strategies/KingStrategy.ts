@@ -13,9 +13,11 @@ export default class KingStrategy extends PieceStrategy {
     x: number,
     y: number,
     board: (string | null)[][],
-    color: string,
+    color: string
   ) {
-    return x >= 0 && x < 8 && y >= 0 && y < 8 && !board[x][y]?.includes(color);
+    return (
+      !board[x][y]?.includes("king") && super.isValidMove(x, y, board, color)
+    );
   }
 
   public getValidMoves(position: string, board: (string | null)[][]) {
@@ -34,7 +36,7 @@ export default class KingStrategy extends PieceStrategy {
     ];
 
     return moves.filter(([newX, newY]) =>
-      this.isValidMove(newX, newY, board, color),
+      this.isValidMove(newX, newY, board, color)
     );
   }
 }
