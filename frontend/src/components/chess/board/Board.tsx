@@ -271,11 +271,22 @@ export default function Board({
     if (kingMoves.length === 0) return false;
 
     for (const [dx, dy] of kingMoves) {
-      if (!controlledBoard[dx][dy]) {
+      const intermidiaryBoard = chessBoard.map((row) => [...row]);
+
+      intermidiaryBoard[dx][dy] = intermidiaryBoard[kingRow][kingCol];
+      intermidiaryBoard[kingRow][kingCol] = null;
+
+      const intermediaryControlledSquares =
+        moveColor === "white" ? blackControlled : whiteControlled;
+
+      console.log(dx, dy);
+      console.log(intermidiaryBoard);
+      console.log(intermediaryControlledSquares, moveColor);
+
+      if (!isCheck(intermidiaryBoard, intermediaryControlledSquares)) {
         return false;
       }
     }
-
     const opponentColor = moveColor === "white" ? "black" : "white";
 
     const attackingPieces: [number, number][] = getAttackingPieces(
@@ -340,8 +351,6 @@ export default function Board({
   ): boolean => {
     const controlledSquares =
       moveColor === "white" ? whiteControlled : blackControlled;
-
-    console.log(controlledSquares);
 
     return controlledSquares[attackerRow]?.[attackerCol] ?? false;
   };
