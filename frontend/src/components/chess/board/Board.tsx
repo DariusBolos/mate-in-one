@@ -279,10 +279,6 @@ export default function Board({
       const intermediaryControlledSquares =
         moveColor === "white" ? blackControlled : whiteControlled;
 
-      console.log(dx, dy);
-      console.log(intermidiaryBoard);
-      console.log(intermediaryControlledSquares, moveColor);
-
       if (!isCheck(intermidiaryBoard, intermediaryControlledSquares)) {
         return false;
       }
