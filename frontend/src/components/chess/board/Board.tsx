@@ -20,14 +20,12 @@ import { socket } from "@/configs/Client";
 
 type Props = {
   handleNewMoveRegistration: (newMove: Move) => void;
-  handleTurnChange: (player: string, color: PieceColor) => void;
   handleGameEnd: (result: Result) => void;
   previousMoves: Move[];
 };
 
 export default function Board({
   handleNewMoveRegistration,
-  handleTurnChange,
   handleGameEnd,
   previousMoves,
 }: Props) {
@@ -127,12 +125,6 @@ export default function Board({
     }
 
     handleBoardUpdate(x, y, initialX, initialY).then();
-
-    if (moveColor === "white") {
-      handleTurnChange("Player 2", "black");
-    } else {
-      handleTurnChange("Player 1", "white");
-    }
   };
 
   const handleBoardUpdate = async (

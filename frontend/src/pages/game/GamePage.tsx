@@ -5,7 +5,6 @@ import PlayerBanner from "../../components/chess/ui/PlayerBanner";
 import { Move } from "@/types/Move.ts";
 import { useChessStore } from "@/hooks/ChessBoardHooks.ts";
 import { Turn } from "@/types/Turn.ts";
-import { PieceColor } from "@/types/Piece.ts";
 import { useGame } from "@/hooks/GameHooks.ts";
 import { ResultDialog } from "@/components/chess/ui/ResultDialog.tsx";
 import { Result } from "@/types/Result.ts";
@@ -18,10 +17,6 @@ export default function GamePage() {
     useChessStore();
   const { gameFinished, setGameFinished } = useGame();
   const [moves, setMoves] = useState<Move[]>([]);
-  const [turn, setTurn] = useState<Turn>({
-    player: "Player 1",
-    color: "white",
-  });
   const [endResult, setEndResult] = useState<Result>({
     winner: "",
     loser: "",
@@ -35,10 +30,6 @@ export default function GamePage() {
       setChessBoard(board);
       setMoveColor(color);
       setMoves([...moves]);
-
-      color === "white"
-        ? setTurn({ player: "Player1", color: "white" })
-        : setTurn({ player: "Player2", color: "black" });
     });
   }, [socket]);
 
@@ -68,13 +59,6 @@ export default function GamePage() {
     setChessBoard(newBoard);
 
     moveColor === "white" ? setMoveColor("black") : setMoveColor("white");
-    moveColor === "white"
-      ? setTurn({ player: "Player2", color: "black" })
-      : setTurn({ player: "Player1", color: "white" });
-  };
-
-  const changeTurn = (player: string, color: PieceColor) => {
-    setTurn({ player, color });
   };
 
   const endGame = (result: Result) => {
@@ -89,7 +73,6 @@ export default function GamePage() {
         <PlayerBanner username="Player 2" avatar="" />
         <Board
           handleNewMoveRegistration={registerNewMove}
-          handleTurnChange={changeTurn}
           handleGameEnd={endGame}
           previousMoves={moves}
         />
