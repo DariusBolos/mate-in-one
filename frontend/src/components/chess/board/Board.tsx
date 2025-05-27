@@ -17,7 +17,6 @@ import { MouseEvent } from "react";
 import { toast } from "sonner";
 import { Result } from "@/types/Result.ts";
 import { socket } from "@/configs/Client";
-import { log } from "console";
 
 type Props = {
   handleNewMoveRegistration: (newMove: Move) => void;
@@ -75,7 +74,7 @@ export default function Board({
       color: moveColor,
       moves: previousMoves,
     });
-  }, [moveColor]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [moveColor]);
 
   useEffect(() => {
     socket.on("receive_result", (data) => {
