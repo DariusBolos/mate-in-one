@@ -4,7 +4,6 @@ import MoveTracker from "../../components/chess/ui/MoveTracker";
 import PlayerBanner from "../../components/chess/ui/PlayerBanner";
 import { Move } from "@/types/Move.ts";
 import { useChessStore } from "@/hooks/ChessBoardHooks.ts";
-import { Turn } from "@/types/Turn.ts";
 import { useGame } from "@/hooks/GameHooks.ts";
 import { ResultDialog } from "@/components/chess/ui/ResultDialog.tsx";
 import { Result } from "@/types/Result.ts";

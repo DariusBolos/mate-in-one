@@ -12,7 +12,6 @@ import { selectStrategy } from "@/utils/strategies/StrategySelector.ts";
 import { Strategy } from "@/types/Strategy.ts";
 import { useChessStore, useControlledStore } from "@/hooks/ChessBoardHooks.ts";
 import { Move } from "@/types/Move.ts";
-import { PieceColor } from "@/types/Piece.ts";
 import { MouseEvent } from "react";
 import { toast } from "sonner";
 import { Result } from "@/types/Result.ts";
