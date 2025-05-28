@@ -1,21 +1,23 @@
-const express = require('express');
-const { port, mongoUrl } = require('./config/config.js');
-const initDatabaseConnection = require('./config/database.js');
-const cors = require('cors');
+const express = require("express");
+const { mongoUrl } = require("./config/config.js");
+const initDatabaseConnection = require("./config/database.js");
+const cors = require("cors");
 const http = require("http");
+require("dotenv").config();
 const initSocket = require("./middleware/socket.js");
-const userRoutes = require('./routes/userRoutes.js');
+const userRoutes = require("./routes/userRoutes.js");
 
+const PORT = process.env.PORT || 3000;
 const app = express();
 
 initDatabaseConnection(mongoUrl).then();
 app.use(express.json());
 app.use(cors());
-app.use('/user', userRoutes);
+app.use("/user", userRoutes);
 
 const server = http.createServer(app);
 initSocket(server);
 
-server.listen(port, () => {
-    console.log("Server is running");
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
