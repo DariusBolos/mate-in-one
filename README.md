@@ -35,7 +35,7 @@ The game offers a seamless experience with real-time gameplay, an intuitive UI, 
 - Built using **React (TSX) and TailwindCSS** for a sleek and responsive design.  
 
 ### 💽 **Server-Side Features**  
-- **Express.js backend** handles game sessions, user accounts, and move validation.  
+- **Express.js backend** handles game sessions and user accounts.  
 - **MongoDB (Mongoose) database** stores user profiles, match history, and settings.  
 - **RESTful API** for fetching game data and handling user authentication.  
 
