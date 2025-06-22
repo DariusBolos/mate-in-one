@@ -22,7 +22,11 @@ module.exports = {
     const { email, password } = req.query;
 
     if (await checkIfUserExists(email, password)) {
-      res.status(200).send("Login successful.");
+      const token = jwt.sign({ email: email }, process.env.JWT_SECRET, {
+        expiresIn: "1h",
+      });
+
+      res.status(200).json({ token, message: "Login successful." });
       return;
     }
 

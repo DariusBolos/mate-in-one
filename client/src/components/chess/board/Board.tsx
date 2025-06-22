@@ -52,8 +52,6 @@ export default function Board({
     const controlledSquares =
       moveColor === "white" ? blackControlled : whiteControlled;
 
-    console.log(controlledSquares);
-
     if (isCheckmate(controlledSquares)) {
       const result: Result = {
         winner: opponentColor,

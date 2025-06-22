@@ -8,24 +8,32 @@ import RegisterPage from "./pages/auth/RegisterPage.tsx";
 import DashboardPage from "./pages/dashboard/DashboardPage.tsx";
 import GamePage from "./pages/game/GamePage.tsx";
 import AboutPage from "./pages/about/AboutPage.tsx";
-import {ThemeProvider} from "next-themes";
-import {GameProvider} from "@/context/GameContext.tsx";
+import { ThemeProvider } from "next-themes";
+import { GameProvider } from "@/context/GameContext.tsx";
+import PrivateRoute from "./components/auth/PrivateRoute.tsx";
 
 createRoot(document.getElementById("root")!).render(
-    <StrictMode>
-        <ThemeProvider attribute="class" defaultTheme="dark">
-            <GameProvider>
-                <BrowserRouter>
-                    <Routes>
-                        <Route path="/" element={<LandingPage />} />
-                        <Route path="/login" element={<LoginPage />} />
-                        <Route path="/register" element={<RegisterPage />} />
-                        <Route path="/dashboard" element={<DashboardPage />} />
-                        <Route path="/game" element={<GamePage />} />
-                        <Route path="/about" element={<AboutPage />} />
-                    </Routes>
-                </BrowserRouter>
-            </GameProvider>
-        </ThemeProvider>
-    </StrictMode>
+  <StrictMode>
+    <ThemeProvider attribute="class" defaultTheme="dark">
+      <GameProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute>
+                  <DashboardPage />
+                </PrivateRoute>
+              }
+            />
+            <Route path="/game" element={<GamePage />} />
+            <Route path="/about" element={<AboutPage />} />
+          </Routes>
+        </BrowserRouter>
+      </GameProvider>
+    </ThemeProvider>
+  </StrictMode>
 );

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { User } from "../types/User";
 import { toast } from "sonner";
+import { LoginResponse } from "@/types/LoginResponse";
 
 const userUrl = `${import.meta.env.VITE_API_URL}/user`;
 const appUrl = import.meta.env.VITE_APP_URL;
@@ -17,12 +18,18 @@ async function saveUser(user: User) {
 
 async function getUser(email: string, password: string) {
   await axios
-    .get(userUrl, { params: { email, password } })
+    .get<LoginResponse>(userUrl, {
+      params: { email, password },
+    })
     .then((response) => {
-      toast.success(response.data);
+      const { token, message } = response.data;
+      localStorage.setItem("token", token);
+      toast.success(message);
       setTimeout(() => window.location.replace(`${appUrl}/dashboard`), 1500);
     })
-    .catch((error) => toast.error(error.response.data));
+    .catch((error) =>
+      toast.error(error?.response?.data?.message || "Login failed")
+    );
 }
 
 export { saveUser, getUser };
