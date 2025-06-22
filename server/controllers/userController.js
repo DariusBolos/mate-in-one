@@ -18,8 +18,10 @@ const checkIfUserExists = async (email, password = "") => {
 };
 
 module.exports = {
-  get: async (req, res) => {
-    const { email, password } = req.query;
+  login: async (req, res) => {
+    const { email, password } = req.body;
+
+    console.log(email);
 
     if (await checkIfUserExists(email, password)) {
       const token = jwt.sign({ email: email }, process.env.JWT_SECRET, {
@@ -33,7 +35,7 @@ module.exports = {
     res.status(404).send("User not found. Invalid credentials.");
   },
 
-  post: async (req, res) => {
+  register: async (req, res) => {
     const { email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
 

@@ -30,7 +30,7 @@ export default function LoginForm() {
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form
             action="/login"
-            method="GET"
+            method="POST"
             className="space-y-6"
             onSubmit={handleLoginSubmitEvent}
           >

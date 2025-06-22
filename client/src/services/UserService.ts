@@ -18,9 +18,7 @@ async function saveUser(user: User) {
 
 async function getUser(email: string, password: string) {
   await axios
-    .get<LoginResponse>(userUrl, {
-      params: { email, password },
-    })
+    .post<LoginResponse>(`${userUrl}/login`, { email, password })
     .then((response) => {
       const { token, message } = response.data;
       localStorage.setItem("token", token);
