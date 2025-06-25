@@ -2,19 +2,46 @@ import { NavLink } from "react-router";
 import logo from "../../assets/logo.png";
 import PasswordInput from "../shared/password-input/PasswordInput";
 import { FormEvent, useRef } from "react";
-import { getUser } from "../../services/UserService";
+import {
+  getUserDetails,
+  validateUserCredentials,
+} from "../../services/UserService";
+import { useLoginInfo } from "@/hooks/LoggedInUserHooks";
+import { useNavigate } from "react-router";
+import { setupAutoLogout } from "@/context/LoggedInContext";
 
 export default function LoginForm() {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
+  const { setIsLoggedIn, setLoggedInUser } = useLoginInfo();
 
-  const handleLoginSubmitEvent = (e: FormEvent<HTMLFormElement>) => {
-    if (!e) {
-      return;
-    }
+  const logout = () => {
+    localStorage.removeItem("token");
+    setLoggedInUser(null);
+    setIsLoggedIn(false);
+    navigate("/login");
+  };
 
+  const handleLoginSubmitEvent = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    getUser(emailRef.current!.value, passwordRef.current!.value);
+
+    try {
+      const email = emailRef.current!.value;
+      const password = passwordRef.current!.value;
+
+      const token = await validateUserCredentials(email, password);
+
+      if (token) {
+        const user = await getUserDetails();
+        if (user) {
+          setLoggedInUser(user);
+          setIsLoggedIn(true);
+          setupAutoLogout(logout);
+          navigate("/dashboard");
+        }
+      }
+    } catch (err) {}
   };
 
   return (

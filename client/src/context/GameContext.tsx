@@ -11,10 +11,10 @@ type Props = {
   children: ReactNode;
 };
 
-interface GameContextType {
+type GameContextType = {
   gameFinished: boolean;
   setGameFinished: Dispatch<SetStateAction<boolean>>;
-}
+};
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 

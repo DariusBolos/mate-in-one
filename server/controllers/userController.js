@@ -1,57 +1,67 @@
 const User = require("../models/userModel");
-const { v4: uuidv4 } = require("uuid");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-
-const checkIfUserExists = async (email, password = "") => {
-  try {
-    const user = await User.findOne({ email });
-
-    if (password === "") {
-      return user !== null;
-    }
-
-    return user !== null && bcrypt.compare(password, user.password);
-  } catch (error) {
-    res.status(400).send(error);
-  }
-};
 
 module.exports = {
-  login: async (req, res) => {
-    const { email, password } = req.body;
+  getUser: async (req, res) => {
+    const { email } = req.user;
 
-    console.log(email);
+    try {
+      const user = await User.findOne({ email });
 
-    if (await checkIfUserExists(email, password)) {
-      const token = jwt.sign({ email: email }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
-      });
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
 
-      res.status(200).json({ token, message: "Login successful." });
-      return;
+      const { password, ...userResponse } = user.toObject();
+      res.json(userResponse);
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
     }
-
-    res.status(404).send("User not found. Invalid credentials.");
   },
 
-  register: async (req, res) => {
-    const { email, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
+  updateUser: async (req, res) => {
+    const updates = req.body;
+    const userId = req.params.id;
 
-    if (await checkIfUserExists(email)) {
-      res.status(400).send("A User with this email already exists.");
-      return;
+    if (
+      updates.email &&
+      (!updates.email.includes("@") || !updates.email.includes("."))
+    ) {
+      res.status(400).json({ message: "Invalid email." });
     }
 
-    const user = new User({ ...req.body });
-    const { avatar } = req.body;
-    avatar._id = uuidv4();
-    user._id = uuidv4();
-    user.password = hashedPassword;
-    user.avatar = avatar;
-    user.save();
+    if (updates.password) {
+      const hashedPassword = await bcrypt.hash(updates.password, 10);
+      updates.password = hashedPassword;
+    }
 
-    res.status(201).send("User has been saved successfully.");
+    try {
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { $set: updates },
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const { password, ...userDetails } = updatedUser.toObject();
+
+      res.json(userDetails);
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
+  deleteUser: async (req, res) => {
+    const userId = req.params.id;
+
+    try {
+      const deletedUser = await User.findByIdAndDelete(userId);
+      res.status(200).json({ message: !!deletedUser });
+    } catch (error) {
+      res.status(404).json({ message: "User could not be deleted" });
+    }
   },
 };
